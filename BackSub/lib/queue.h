@@ -37,12 +37,12 @@ public:
 		return value;
 	}
 
-	int Size()
+	int Size() const
 	{
 		return size_;
 	}
 
-	int Get(int n)
+	int Get(int n) const
 	{
 		if (n >= size_)
 			throw Overflow();
