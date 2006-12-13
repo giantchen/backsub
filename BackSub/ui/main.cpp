@@ -62,7 +62,6 @@ void test_show_avi()
 		cvConvertImage(img, imgGray, CV_CVTIMG_FLIP);
 		cvShowImage("mainWin", imgGray);
 
-		IplImage* imgAverage = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
 		for (int i = 0; i < img->height; ++i) {
 			for (int j = 0; j < img->width; ++j) {
 				average[i][j] += ((uchar*)imgGray->imageData)[i*imgGray->widthStep+j];
@@ -72,8 +71,9 @@ void test_show_avi()
 		
 		cvReleaseImage(&imgGray);
 
+		
 		if (currFrame % AVERAGE_FRAMES == 0) {
-
+			IplImage* imgAverage = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
 			for (int i = 0; i < img->height; ++i) {
 				for (int j = 0; j < img->width; ++j) {
 					((uchar*)imgAverage->imageData)[i*imgAverage->widthStep+j] = average[i][j] / AVERAGE_FRAMES;
@@ -82,8 +82,9 @@ void test_show_avi()
 			}
 
 			cvShowImage("subWin", imgAverage);
+			cvReleaseImage(&imgAverage);
 		}
-		cvReleaseImage(&imgAverage);
+		
 
 		int key = cvWaitKey(20);
 		if (27 == key)

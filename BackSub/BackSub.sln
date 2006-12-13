@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib", "lib\lib.vcproj", "{5
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_lib", "test_lib\test_lib.vcproj", "{793EC645-D20F-4B60-88B7-DBE0946F90B0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -21,6 +25,10 @@ Global
 		{55F6725A-54C8-4A30-A465-878C452E2319}.Debug.Build.0 = Debug|Win32
 		{55F6725A-54C8-4A30-A465-878C452E2319}.Release.ActiveCfg = Release|Win32
 		{55F6725A-54C8-4A30-A465-878C452E2319}.Release.Build.0 = Release|Win32
+		{793EC645-D20F-4B60-88B7-DBE0946F90B0}.Debug.ActiveCfg = Debug|Win32
+		{793EC645-D20F-4B60-88B7-DBE0946F90B0}.Debug.Build.0 = Debug|Win32
+		{793EC645-D20F-4B60-88B7-DBE0946F90B0}.Release.ActiveCfg = Release|Win32
+		{793EC645-D20F-4B60-88B7-DBE0946F90B0}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
