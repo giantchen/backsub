@@ -9,6 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib", "lib\lib.vcproj", "{5
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_lib", "test_lib\test_lib.vcproj", "{793EC645-D20F-4B60-88B7-DBE0946F90B0}"
 	ProjectSection(ProjectDependencies) = postProject
+		{55F6725A-54C8-4A30-A465-878C452E2319} = {55F6725A-54C8-4A30-A465-878C452E2319}
 	EndProjectSection
 EndProject
 Global

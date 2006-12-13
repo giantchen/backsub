@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="test_lib"
 	ProjectGUID="{793EC645-D20F-4B60-88B7-DBE0946F90B0}"
+	RootNamespace="test_lib"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -32,8 +33,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="libd.lib"
 				OutputFile="$(OutDir)/test_lib.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\lib\Debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/test_lib.pdb"
 				SubSystem="1"
@@ -78,8 +81,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="lib.lib"
 				OutputFile="$(OutDir)/test_lib.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\lib\Release"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"

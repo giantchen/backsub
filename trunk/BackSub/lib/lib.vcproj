@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/lib.lib"/>
+				OutputFile="$(OutDir)/libd.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -100,11 +100,20 @@
 			<File
 				RelativePath=".\mog.cpp">
 			</File>
+			<File
+				RelativePath=".\simple.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\algorithms.h">
+			</File>
+			<File
+				RelativePath=".\FrameQueue.h">
+			</File>
 			<File
 				RelativePath=".\queue.h">
 			</File>
