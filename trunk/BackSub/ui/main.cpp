@@ -3,8 +3,61 @@
 
 #include "cv.h"
 #include "highgui.h"
+#include "FrameQueue.h"
 
 using namespace std;
+
+void back_sub(const char* filename, Operation op)
+{
+	CvCapture* cap = cvCaptureFromAVI(filename);
+	if (!cap)
+		return;
+
+	cvNamedWindow("mainWin", CV_WINDOW_AUTOSIZE);
+	cvMoveWindow("mainWin", 100, 100);
+
+	cvNamedWindow("subWin", CV_WINDOW_AUTOSIZE);
+	cvMoveWindow("subWin", 500, 100);
+
+	int frameHeight = (int)cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_HEIGHT);
+	int frameWidth = (int)cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_WIDTH);
+	int nFrames = (int)cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_COUNT);
+	printf("nFrames = %d\n", nFrames);
+
+	//CvMat* average = cvCreateMat(frameHeight, frameWidth, CV_16UC1);
+	//vector<vector<int> > average(frameHeight, vector<int>(frameWidth, 0));
+	const int AVERAGE_FRAMES = 80;
+
+	FrameQueue fq(AVERAGE_FRAMES, frameWidth, frameHeight);
+
+	for (int currFrame = 0; currFrame < nFrames; ++currFrame) {
+		if (!cvGrabFrame(cap)) {
+			printf("Can not grab a frame\n");
+			return;
+		}
+		IplImage* img = cvRetrieveFrame(cap);
+		IplImage* imgGray = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
+		cvConvertImage(img, imgGray, CV_CVTIMG_FLIP);
+		cvShowImage("mainWin", imgGray);
+	
+		uchar* imgData = (uchar*)imgGray->imageData;
+		int nPixels = img->width * img->height;
+		vector<int> frame(imgData, imgData + nPixels);
+
+		fq.Enqueue(frame);
+		vector<int> result = fq.Apply(op);
+
+		IplImage* imgResult = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
+		copy(result.begin(), result.end(), (uchar*)imgResult->imageData);
+		cvShowImage("subWin", imgResult);
+		cvReleaseImage(&imgResult);
+
+	
+	    int key = cvWaitKey(1);
+	    if (27 == key)
+			break;
+	}
+}
 
 void show_image(const char* windowName, IplImage* img)
 {
@@ -85,8 +138,7 @@ void test_show_avi()
 			cvReleaseImage(&imgAverage);
 		}
 		
-
-		int key = cvWaitKey(20);
+        int key = cvWaitKey(20);
 		if (27 == key)
 			break;
 	}
@@ -114,7 +166,7 @@ void trackbarHandler(int pos)
 int main()
 {
 //	test_show_image();
-	test_show_avi();
+	//test_show_avi();
 //   test_element_accessing();
-	
+	back_sub("E:\\video\\split002.avi", NonPara);
 }
