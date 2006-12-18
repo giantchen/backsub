@@ -101,7 +101,13 @@
 				RelativePath=".\mog.cpp">
 			</File>
 			<File
+				RelativePath=".\nonpara.cpp">
+			</File>
+			<File
 				RelativePath=".\simple.cpp">
+			</File>
+			<File
+				RelativePath=".\surendra.cpp">
 			</File>
 		</Filter>
 		<Filter

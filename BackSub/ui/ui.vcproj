@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="E:\OpenCV\cxcore\include;E:\OpenCV\cv\include;E:\OpenCV\otherlibs\highgui"
+				AdditionalIncludeDirectories="E:\OpenCV\cxcore\include;E:\OpenCV\cv\include;E:\OpenCV\otherlibs\highgui;..\lib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -32,10 +32,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cxcored.lib cvd.lib highguid.lib"
+				AdditionalDependencies="cxcored.lib cvd.lib highguid.lib libd.lib"
 				OutputFile="$(OutDir)/ui.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="E:\OpenCV\lib"
+				AdditionalLibraryDirectories="E:\OpenCV\lib;..\lib\Debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/ui.pdb"
 				SubSystem="1"
@@ -69,7 +69,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="E:\OpenCV\cxcore\include;E:\OpenCV\cv\include;E:\OpenCV\otherlibs\highgui"
+				AdditionalIncludeDirectories="E:\OpenCV\cxcore\include;E:\OpenCV\cv\include;E:\OpenCV\otherlibs\highgui;..\lib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -80,10 +80,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cxcore.lib cv.lib highgui.lib"
+				AdditionalDependencies="cxcore.lib cv.lib highgui.lib lib.lib"
 				OutputFile="$(OutDir)/ui.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="E:\OpenCV\lib"
+				AdditionalLibraryDirectories="E:\OpenCV\lib;..\lib\Release"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"
