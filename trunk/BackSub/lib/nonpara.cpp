@@ -19,12 +19,14 @@ int NonPara( const Queue& q)
 		return 0;
 	else if( size == 1)
 		return q.Get(0);
+	else if( size == 2)
+		return (q.Get(0) + q.Get(1)) / 2;
 
-	int cur = q.Get(0);    //current frame
+	int cur = q.Get(size-1);    //current frame
 	
 	vector<int> buf(size-1);
 	for(int i = 0; i < (size-1); i++)
-		buf[i] = q.Get(i+1);
+		buf[i] = q.Get(i);
 
 	//calculate the median of |x(i) - x(i-1)|
 	vector<int> sub(size-2);
@@ -42,18 +44,17 @@ int NonPara( const Queue& q)
 	double dev = m / ( 0.68 * sqrt(2.0) );
 
     //calculate |xt - xi|^2
-	vector<int> subcur(size-1);
+	int subcur;
 	const double pi = 3.1415926;
 	double sum = 0;
 	for( int i = 0; i < (size-1); i++)
 	{
-		subcur[i] = ( cur - buf[i] ) * ( cur - buf[i] );
-		double temp1 = exp( -subcur[i]/dev/dev/2);
+		subcur = ( cur - buf[i] ) * ( cur - buf[i] );
+		double temp1 = exp( -subcur/dev/dev/2);
 		double temp2 = temp1/sqrt(2 * pi)/dev;
 		sum += temp2;
 	}
 
 	//return the Pr(xt)
-	return (int) sum/(size-1);	
-
+	return (int) sum / (size-1) * 255;	
 }
