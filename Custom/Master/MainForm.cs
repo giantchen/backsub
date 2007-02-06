@@ -5,6 +5,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -12,8 +14,10 @@ namespace Master
 {
   public partial class MainForm : Form
   {
+    UdpClient udpClient_ = new UdpClient();
     IntPtr hBoard;
     bool isActive = false;
+    private string basefilename;
 
     public MainForm()
     {
@@ -62,7 +66,8 @@ namespace Master
 
     private void saveFile()
     {
-      string filename = "temp.jpg";
+      basefilename = string.Format(@"{0}.jpg", DateTime.Now.ToString("yyyyMMdd_HHmmss_ffffff"));
+      String filename = @"C:\figs\" + basefilename;
       int filesize = OkApi.SaveImageFile(hBoard, filename,
         80, OkApi.TARGET_SCREEN, 0, 1);
       if (filesize > 0)
@@ -92,6 +97,23 @@ namespace Master
     private void timerMove_Tick(object sender, EventArgs e)
     {
       startCapture();
+    }
+
+    private void btPda1_Click(object sender, EventArgs e)
+    {
+      sendtoPda("127.0.0.1");
+    }
+    
+    private void sendtoPda(string ip)
+    {
+      if (String.IsNullOrEmpty(basefilename))
+        MessageBox.Show("«Îœ»—°‘Ò“ª∑˘Õº∆¨");
+      else
+      {
+        string url = "http://fuzzy-develop/figs/" + basefilename;
+        IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), 8899);
+        udpClient_.Send(Encoding.Default.GetBytes(url), url.Length, ep);
+      }
     }
   }
 }
