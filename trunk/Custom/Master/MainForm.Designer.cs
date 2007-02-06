@@ -33,6 +33,7 @@ namespace Master
           this.btStop = new System.Windows.Forms.Button();
           this.statusStrip = new System.Windows.Forms.StatusStrip();
           this.timerMove = new System.Windows.Forms.Timer(this.components);
+          this.btPda1 = new System.Windows.Forms.Button();
           ((System.ComponentModel.ISupportInitialize)(this.picMain)).BeginInit();
           this.SuspendLayout();
           // 
@@ -81,11 +82,22 @@ namespace Master
           this.timerMove.Interval = 1000;
           this.timerMove.Tick += new System.EventHandler(this.timerMove_Tick);
           // 
+          // btPda1
+          // 
+          this.btPda1.Location = new System.Drawing.Point(12, 80);
+          this.btPda1.Name = "btPda1";
+          this.btPda1.Size = new System.Drawing.Size(75, 23);
+          this.btPda1.TabIndex = 4;
+          this.btPda1.Text = "PDA 1";
+          this.btPda1.UseVisualStyleBackColor = true;
+          this.btPda1.Click += new System.EventHandler(this.btPda1_Click);
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
           this.ClientSize = new System.Drawing.Size(873, 613);
+          this.Controls.Add(this.btPda1);
           this.Controls.Add(this.statusStrip);
           this.Controls.Add(this.btStop);
           this.Controls.Add(this.btStart);
@@ -108,6 +120,7 @@ namespace Master
       private System.Windows.Forms.Button btStop;
       private System.Windows.Forms.StatusStrip statusStrip;
       private System.Windows.Forms.Timer timerMove;
+      private System.Windows.Forms.Button btPda1;
     }
 }
 
