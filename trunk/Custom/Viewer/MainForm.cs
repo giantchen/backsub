@@ -25,6 +25,12 @@ namespace Viewer
       listener_ = new UDPListener(portToListen, this);
       listenerThread_ = new Thread(new ThreadStart(listener_.Run));
       listenerThread_.Start();
+      string hostname = Dns.GetHostName();
+      IPHostEntry ips = Dns.GetHostEntry(hostname);
+      foreach (IPAddress ip in ips.AddressList)
+      {
+        textBox1.Text += ip.ToString() + ", ";
+      }
     }
 
     private void MainForm_KeyDown(object sender, KeyEventArgs e)

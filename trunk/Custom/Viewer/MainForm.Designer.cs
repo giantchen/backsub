@@ -31,6 +31,7 @@ namespace Viewer
           this.mainMenu1 = new System.Windows.Forms.MainMenu();
           this.picMain = new System.Windows.Forms.PictureBox();
           this.btRedraw = new System.Windows.Forms.Button();
+          this.textBox1 = new System.Windows.Forms.TextBox();
           this.SuspendLayout();
           // 
           // picMain
@@ -49,12 +50,21 @@ namespace Viewer
           this.btRedraw.Text = "Redraw";
           this.btRedraw.Click += new System.EventHandler(this.btRedraw_Click);
           // 
+          // textBox1
+          // 
+          this.textBox1.Location = new System.Drawing.Point(3, 185);
+          this.textBox1.Name = "textBox1";
+          this.textBox1.Size = new System.Drawing.Size(234, 21);
+          this.textBox1.TabIndex = 3;
+          this.textBox1.Text = "IP: ";
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
           this.AutoScroll = true;
           this.ClientSize = new System.Drawing.Size(240, 268);
+          this.Controls.Add(this.textBox1);
           this.Controls.Add(this.btRedraw);
           this.Controls.Add(this.picMain);
           this.KeyPreview = true;
@@ -70,6 +80,7 @@ namespace Viewer
 
       private System.Windows.Forms.PictureBox picMain;
       private System.Windows.Forms.Button btRedraw;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
