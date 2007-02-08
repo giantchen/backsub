@@ -34,6 +34,10 @@ namespace Master
           this.statusStrip = new System.Windows.Forms.StatusStrip();
           this.timerMove = new System.Windows.Forms.Timer(this.components);
           this.btPda1 = new System.Windows.Forms.Button();
+          this.btPda2 = new System.Windows.Forms.Button();
+          this.txLocalIp = new System.Windows.Forms.TextBox();
+          this.txPda1Ip = new System.Windows.Forms.TextBox();
+          this.txPda2Ip = new System.Windows.Forms.TextBox();
           ((System.ComponentModel.ISupportInitialize)(this.picMain)).BeginInit();
           this.SuspendLayout();
           // 
@@ -84,7 +88,7 @@ namespace Master
           // 
           // btPda1
           // 
-          this.btPda1.Location = new System.Drawing.Point(12, 80);
+          this.btPda1.Location = new System.Drawing.Point(12, 198);
           this.btPda1.Name = "btPda1";
           this.btPda1.Size = new System.Drawing.Size(75, 23);
           this.btPda1.TabIndex = 4;
@@ -92,11 +96,49 @@ namespace Master
           this.btPda1.UseVisualStyleBackColor = true;
           this.btPda1.Click += new System.EventHandler(this.btPda1_Click);
           // 
+          // btPda2
+          // 
+          this.btPda2.Location = new System.Drawing.Point(12, 254);
+          this.btPda2.Name = "btPda2";
+          this.btPda2.Size = new System.Drawing.Size(75, 23);
+          this.btPda2.TabIndex = 5;
+          this.btPda2.Text = "PDA 2";
+          this.btPda2.UseVisualStyleBackColor = true;
+          this.btPda2.Click += new System.EventHandler(this.btPda2_Click);
+          // 
+          // txLocalIp
+          // 
+          this.txLocalIp.Location = new System.Drawing.Point(12, 70);
+          this.txLocalIp.Multiline = true;
+          this.txLocalIp.Name = "txLocalIp";
+          this.txLocalIp.Size = new System.Drawing.Size(75, 66);
+          this.txLocalIp.TabIndex = 6;
+          // 
+          // txPda1Ip
+          // 
+          this.txPda1Ip.Location = new System.Drawing.Point(12, 171);
+          this.txPda1Ip.Name = "txPda1Ip";
+          this.txPda1Ip.Size = new System.Drawing.Size(75, 21);
+          this.txPda1Ip.TabIndex = 7;
+          this.txPda1Ip.Text = "192.168.1.3";
+          // 
+          // txPda2Ip
+          // 
+          this.txPda2Ip.Location = new System.Drawing.Point(12, 227);
+          this.txPda2Ip.Name = "txPda2Ip";
+          this.txPda2Ip.Size = new System.Drawing.Size(75, 21);
+          this.txPda2Ip.TabIndex = 8;
+          this.txPda2Ip.Text = "192.168.1.4";
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
           this.ClientSize = new System.Drawing.Size(873, 613);
+          this.Controls.Add(this.txPda2Ip);
+          this.Controls.Add(this.txPda1Ip);
+          this.Controls.Add(this.txLocalIp);
+          this.Controls.Add(this.btPda2);
           this.Controls.Add(this.btPda1);
           this.Controls.Add(this.statusStrip);
           this.Controls.Add(this.btStop);
@@ -107,6 +149,7 @@ namespace Master
           this.Text = "º‡ ”";
           this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
           this.Move += new System.EventHandler(this.MainForm_Move);
+          this.Load += new System.EventHandler(this.MainForm_Load);
           ((System.ComponentModel.ISupportInitialize)(this.picMain)).EndInit();
           this.ResumeLayout(false);
           this.PerformLayout();
@@ -121,6 +164,10 @@ namespace Master
       private System.Windows.Forms.StatusStrip statusStrip;
       private System.Windows.Forms.Timer timerMove;
       private System.Windows.Forms.Button btPda1;
+      private System.Windows.Forms.Button btPda2;
+      private System.Windows.Forms.TextBox txLocalIp;
+      private System.Windows.Forms.TextBox txPda1Ip;
+      private System.Windows.Forms.TextBox txPda2Ip;
     }
 }
 

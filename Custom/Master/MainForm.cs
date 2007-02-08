@@ -27,6 +27,12 @@ namespace Master
       Debug.Assert(hBoard.ToInt32() != 0);
 
       OkApi.SetCaptureParam(hBoard, (ushort)ECapture.CAPTURE_CLIPMODE, 0); // 缩放方式
+      string hostname = Dns.GetHostName();
+      IPHostEntry ips = Dns.GetHostEntry(hostname);
+      foreach (IPAddress ip in ips.AddressList)
+      {
+        txLocalIp.Text += ip.ToString() + "\n";
+      }
     }
 
     private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -67,7 +73,7 @@ namespace Master
     private void saveFile()
     {
       basefilename = string.Format(@"{0}.jpg", DateTime.Now.ToString("yyyyMMdd_HHmmss_ffffff"));
-      String filename = @"C:\figs\" + basefilename;
+      String filename = @"\figs\" + basefilename;
       int filesize = OkApi.SaveImageFile(hBoard, filename,
         80, OkApi.TARGET_SCREEN, 0, 1);
       if (filesize > 0)
@@ -99,21 +105,41 @@ namespace Master
       startCapture();
     }
 
-    private void btPda1_Click(object sender, EventArgs e)
-    {
-      sendtoPda("127.0.0.1");
-    }
-    
     private void sendtoPda(string ip)
     {
+      if (isActive)
+      {
+        stopCapture();
+        saveFile();
+        startCapture();
+      }
+
       if (String.IsNullOrEmpty(basefilename))
+      {
         MessageBox.Show("请先选择一幅图片");
+      }
       else
       {
-        string url = "http://fuzzy-develop/figs/" + basefilename;
+        string url = string.Format("http://{0}/figs/{1}", 
+                                   txLocalIp.Text.Split('\n')[0], basefilename);
         IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), 8899);
         udpClient_.Send(Encoding.Default.GetBytes(url), url.Length, ep);
       }
+    }
+
+    private void btPda1_Click(object sender, EventArgs e)
+    {
+      sendtoPda(txPda1Ip.Text);
+    }
+    
+    private void btPda2_Click(object sender, EventArgs e)
+    {
+      sendtoPda(txPda2Ip.Text);
+    }
+
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+      btStart_Click(sender, e);
     }
   }
 }
