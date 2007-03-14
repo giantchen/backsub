@@ -79,8 +79,8 @@ namespace Master
       if (filesize > 0)
       {
         FileStream fs = File.OpenRead(filename);
-        Bitmap picture = new Bitmap(fs);
-        picMain.Image = picture;
+        Bitmap picture = new Bitmap((Stream)fs);
+        picMain.Image = (Image)picture;
         fs.Close();
         //File.Delete(filename);
       }
