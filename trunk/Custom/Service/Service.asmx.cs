@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Web;
 using System.Collections;
 using System.Web.Services;
@@ -20,26 +21,12 @@ namespace Service
   public class Service : System.Web.Services.WebService
   {
     static string connStr = ConfigurationManager.ConnectionStrings["Custom"].ConnectionString;
-    /// <summary>
-    /// A test method.
-    /// </summary>
-    /// <returns>A fix string of "Hello World"</returns>
-    [WebMethod]
-    public string HelloWorld()
-    {
-      return "Hello World";
-    }
     
     [WebMethod]
-    public Pda[] ListAlivePdas()
+    public Pda[] ListAllPdas()
     {
-      /*
-      return new Pda[]{new Pda("pda1", "192.168.0.1", DateTime.Now), 
-                      new Pda("pda2", "192.168.0.2", DateTime.Now)};
-      */
-      SqlConnection conn = new SqlConnection(connStr);
       List<Pda> pdas= new List<Pda>();
-      try
+      using (SqlConnection conn = new SqlConnection(connStr))
       {
         conn.Open();
         SqlCommand command = new SqlCommand("SELECT * FROM PdaState ", conn);
@@ -48,38 +35,85 @@ namespace Service
         while (reader.Read())
         {
           string name = (string) reader["Pda"];
-          Object o = reader["LastUpdate"];
           DateTime time = (DateTime) reader["LastUpdate"];
           string ip = (string) reader["IpAddr"];
           Pda p = new Pda(name, ip, time);
           pdas.Add(p);
         }
       }
-      finally
-      {
-        conn.Close();
-      }
-      //return count;
+
       return pdas.ToArray();
     }
     
-    //[WebMethod]
     [WebMethod]
     public int UpdatePda(string pdaName, string ipAddr)
     {
-      SqlConnection conn = new SqlConnection(connStr);
       int count = -1;
-      try
+      using (SqlConnection conn = new SqlConnection(connStr))
       {
-        conn.Open();
-        SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM PdaState ", conn);
-        //SqlDataReader reader = command.ExecuteReader();
-        count = (int)command.ExecuteScalar();
-      } finally
-      {
-        conn.Close();
-      }
+        //try
+        //{
+        SqlCommand command = new SqlCommand("UPDATE PdaState SET LastUpdate = @LastUpdate, IpAddr = @IpAddr WHERE Pda = @Pda", conn);
+        command.Parameters.AddWithValue("@LastUpdate", DateTime.Now);
+        command.Parameters.AddWithValue("@IpAddr", ipAddr);
+        command.Parameters.AddWithValue("@Pda", pdaName);
+        command.Connection.Open();
+        count = command.ExecuteNonQuery();
+
+        if (count == 0)
+        {
+          command = new SqlCommand("INSERT INTO PdaState (Pda, IpAddr, LastUpdate) VALUES (@Pda, @IpAddr, @LastUpdate)", conn);
+          command.Parameters.AddWithValue("@LastUpdate", DateTime.Now);
+          command.Parameters.AddWithValue("@IpAddr", ipAddr);
+          command.Parameters.AddWithValue("@Pda", pdaName);
+          count = command.ExecuteNonQuery();
+        }
+        //}
+        /*
+        catch (Exception ex)
+        {
+          Debug.WriteLine(ex);
+        }
+        */
+      } 
       return count;
+    }
+    
+    [WebMethod]
+    public long AddImage(byte[] date)
+    {
+      long imageId = 0;
+      
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        SqlCommand command = new SqlCommand("SET NOCOUNT ON; INSERT INTO Images ([Image], [TimeStamp]) VALUES (@Image, @TimeStamp); SELECT @@IDENTITY", conn);
+        command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
+        command.Parameters.Add("@Image", SqlDbType.Image);
+        command.Parameters["@Image"].Value = date;
+        command.Connection.Open();
+        imageId = (long)(decimal)command.ExecuteScalar();
+      }
+      
+      return imageId;
+    }
+    
+    [WebMethod]
+    public byte[] GetImage(long imageId)
+    {
+      byte[] data = null;
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        SqlCommand command = new SqlCommand("SELECT [Image] FROM Images WHERE [Id] = @Id", conn);
+        command.Parameters.AddWithValue("@Id", imageId);
+        command.Connection.Open();
+        SqlDataReader reader = command.ExecuteReader();
+        if (reader.Read())
+        {
+          data = (byte[])reader["Image"];
+        }
+      }
+
+      return data;
     }
   }
   
