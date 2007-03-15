@@ -78,7 +78,7 @@ namespace TestOkApi
     {
       TestOkApi.localhost.Service target = new TestOkApi.localhost.Service(); // TODO: Use [AspNetDevelopmentServer] and TryUrlRedirection() to auto launch and bind web service.
 
-      byte[] date = new byte[] {18, 82, 4, 3};
+      byte[] date = new byte[] {65, 66, 67, 68};
 
       //long expected = 0;
       long actual;

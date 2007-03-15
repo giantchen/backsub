@@ -17,9 +17,10 @@ public partial class GetImage : System.Web.UI.Page
   protected void Page_Load(object sender, EventArgs e)
   {
     byte[] data = null;
+    DateTime date = DateTime.Now;
     using (SqlConnection conn = new SqlConnection(connStr))
     {
-      SqlCommand command = new SqlCommand("SELECT [Image] FROM [Images] WHERE Id = @Id", conn);
+      SqlCommand command = new SqlCommand("SELECT [Image], [TimeStamp] FROM [Images] WHERE Id = @Id", conn);
       string queryId = Request.QueryString["Id"];
       if (string.IsNullOrEmpty(queryId))
       {
@@ -34,6 +35,7 @@ public partial class GetImage : System.Web.UI.Page
         if (reader.Read())
         {
           data = (byte[])reader["Image"];
+          date = (DateTime)reader["TimeStamp"];
         }
       }
     }
@@ -43,6 +45,7 @@ public partial class GetImage : System.Web.UI.Page
       // Set the page's content type to JPEG files
       // and clear all response headers.
       Response.ContentType = "image/jpeg";
+      Response.AddHeader("Last-Modified", date.ToUniversalTime().ToString("r"));
       Response.Clear();
 
       // Buffer response so that page is sent
@@ -54,6 +57,7 @@ public partial class GetImage : System.Web.UI.Page
       
       // Send the output to the client.
       Response.Flush();
+      Response.End();
     }
   }
 }
