@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -76,12 +77,15 @@ namespace Viewer
     {
       try
       {
+        /*
         WebRequest wreq = WebRequest.Create(url);
         WebResponse wres = wreq.GetResponse();
         Bitmap bitmap = new Bitmap(wres.GetResponseStream());
         wres.Close();
         //wreq.
-        picMain.Image = bitmap;
+        */
+        Show show = service.GetShow(pdaName);
+        picMain.Image = new Bitmap(new MemoryStream(show.Image));
         picMain.Invalidate();
       }
       catch (Exception ex)
@@ -137,10 +141,8 @@ namespace Viewer
           if (msg.IndexOf("stop") == 0)
             break;
 
-          if (msg.IndexOf("http://") != 0)
-            continue;
-          form_.url = msg;
-          form_.Invoke(new EventHandler(form_.btRedraw_Click));
+          if (msg.IndexOf("refresh") == 0)
+            form_.Invoke(new EventHandler(form_.btRedraw_Click));
         }
 
       }

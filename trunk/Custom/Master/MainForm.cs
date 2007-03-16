@@ -20,7 +20,7 @@ namespace Master
     bool isActive = false;
     private string basefilename;
     Service service = new Service();
-
+    //Dictionary<string, 
     public MainForm()
     {
       InitializeComponent();
@@ -35,6 +35,16 @@ namespace Master
       {
         txLocalIp.Text += ip.ToString() + "\n";
       }
+      
+      timerUpdate.Enabled = true;
+    }
+    
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+      //btStart_Click(sender, e);
+      //lvPda.Items.Add("PDA_5", 1);
+      //lvPda.Items.Add("PDA_6", 1);
+      timerUpdate_Tick(sender, e);
     }
 
     private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -128,7 +138,21 @@ namespace Master
         udpClient_.Send(Encoding.Default.GetBytes(url), url.Length, ep);
       }
     }
-
+    
+    private void sendPda(string pda)
+    {
+      byte[] data = Encoding.Default.GetBytes("refresh");
+      ListViewItem item = lvPda.Items[pda];
+      if (item != null)
+      {
+        string[] fields = ((string)item.Tag).Split(':');
+        string ip = fields[0];
+        int port = int.Parse(fields[1]);
+        IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+        udpClient_.Send(data, data.Length, ep);
+      }
+    }
+    
     private void btPda1_Click(object sender, EventArgs e)
     {
       sendtoPda(txPda1Ip.Text);
@@ -139,31 +163,42 @@ namespace Master
       sendtoPda(txPda2Ip.Text);
     }
 
-    private void MainForm_Load(object sender, EventArgs e)
-    {
-      btStart_Click(sender, e);
-    }
-
     private void timerUpdate_Tick(object sender, EventArgs e)
     {
       Pda[] pdas = service.ListAllPdas();
+      //lvPda.Items.Clear();
       foreach (Pda p in pdas)
       {
-        ListViewItem item = new ListViewItem(p.Name);
+        ListViewItem item;
+        if (!lvPda.Items.ContainsKey(p.Name))
+        {
+          //item = new ListViewItem(p.Name);
+          lvPda.Items.Add(p.Name, p.Name, -1);
+          //lvPda.Items.Add(p.Name);
+        }
 
-        item.ToolTipText = p.IpAddr;
-        if (DateTime.Now.Subtract(p.LastUpdate).TotalMinutes < 5)
+        item = lvPda.Items[p.Name];
+        item.ToolTipText = string.Format("{0}, {1}", p.Owner, p.Unit);
+        item.Tag = p.IpAddr;
+        if (DateTime.Now.Subtract(p.LastUpdate).TotalMinutes < 2)
         {
           item.Group = lvPda.Groups["Online"];
-          item.BackColor = Color.Pink;
+          item.ImageIndex = 0;
+          item.BackColor = Color.Gold;
         }
         else
         {
           item.Group = lvPda.Groups["Offline"];
-          item.BackColor = Color.Gray;
+          item.ImageIndex = 1;
+          item.BackColor = Color.White;
         }
-        lvPda.Items.Add(item);
       }
+      
+    }
+
+    private void btGrp1_Click(object sender, EventArgs e)
+    {
+      sendPda("Pda_01");
     }
   }
 }

@@ -74,11 +74,12 @@ namespace TestOkApi
     ///A test for AddImage (byte[])
     ///</summary>
     [TestMethod()]
+    //[Ignore]
     public void AddImageTest()
     {
       TestOkApi.localhost.Service target = new TestOkApi.localhost.Service(); // TODO: Use [AspNetDevelopmentServer] and TryUrlRedirection() to auto launch and bind web service.
 
-      byte[] date = new byte[] {65, 66, 67, 68};
+      byte[] date = new byte[] { 97, 98, 99, 100 };
 
       //long expected = 0;
       long actual;
@@ -89,6 +90,29 @@ namespace TestOkApi
       //Assert.Inconclusive("Verify the correctness of this test method.");
     }
 
+
+    /// <summary>
+    ///A test for SendImage (long, string, string[])
+    ///</summary>
+    [TestMethod()]
+    public void SendImageTest()
+    {
+      TestOkApi.localhost.Service target = new TestOkApi.localhost.Service(); // TODO: Use [AspNetDevelopmentServer] and TryUrlRedirection() to auto launch and bind web service.
+
+      long imageId = 5; // TODO: Initialize to an appropriate value
+
+      string text = "Hello"; // TODO: Initialize to an appropriate value
+
+      string[] pda = new string[] { "PDA_01", "PDA_02" }; // TODO: Initialize to an appropriate value
+
+      int expected = 2;
+      int actual;
+
+      actual = target.SendImage(imageId, text, pda);
+
+      Assert.AreEqual(expected, actual, "TestOkApi.localhost.Service.SendImage did not return the expected value.");
+      //Assert.Inconclusive("Verify the correctness of this test method.");
+    }
   }
 
 

@@ -84,10 +84,10 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://169.254.2.2/Service/Service.asmx">
+    <WebReferenceUrl Include="http://192.168.1.2/Service/Service.asmx">
       <UrlBehavior>Static</UrlBehavior>
       <RelPath>Web References\localhost\</RelPath>
-      <UpdateFromURL>http://169.254.2.2/Service/Service.asmx</UpdateFromURL>
+      <UpdateFromURL>http://192.168.1.2/Service/Service.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
@@ -108,6 +108,9 @@
     </None>
     <None Include="Web References\localhost\Service.disco" />
     <None Include="Web References\localhost\Service.wsdl" />
+    <None Include="Web References\localhost\Show.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
   <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

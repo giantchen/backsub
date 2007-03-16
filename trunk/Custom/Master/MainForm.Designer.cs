@@ -28,8 +28,9 @@ namespace Master
         private void InitializeComponent()
         {
           this.components = new System.ComponentModel.Container();
-          System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Online", System.Windows.Forms.HorizontalAlignment.Left);
-          System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Offline", System.Windows.Forms.HorizontalAlignment.Left);
+          System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("出勤", System.Windows.Forms.HorizontalAlignment.Left);
+          System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("未出勤", System.Windows.Forms.HorizontalAlignment.Left);
+          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
           this.picMain = new System.Windows.Forms.PictureBox();
           this.btStart = new System.Windows.Forms.Button();
           this.btStop = new System.Windows.Forms.Button();
@@ -41,8 +42,10 @@ namespace Master
           this.txPda1Ip = new System.Windows.Forms.TextBox();
           this.txPda2Ip = new System.Windows.Forms.TextBox();
           this.lvPda = new System.Windows.Forms.ListView();
-          this.pda = new System.Windows.Forms.ColumnHeader();
+          this.chPda = new System.Windows.Forms.ColumnHeader();
+          this.imageList1 = new System.Windows.Forms.ImageList(this.components);
           this.timerUpdate = new System.Windows.Forms.Timer(this.components);
+          this.btGrp1 = new System.Windows.Forms.Button();
           ((System.ComponentModel.ISupportInitialize)(this.picMain)).BeginInit();
           this.SuspendLayout();
           // 
@@ -135,35 +138,55 @@ namespace Master
           // lvPda
           // 
           this.lvPda.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.pda});
-          listViewGroup1.Header = "Online";
-          listViewGroup1.Name = "Online";
-          listViewGroup2.Header = "Offline";
-          listViewGroup2.Name = "Offline";
+            this.chPda});
+          listViewGroup3.Header = "出勤";
+          listViewGroup3.Name = "Online";
+          listViewGroup4.Header = "未出勤";
+          listViewGroup4.Name = "Offline";
           this.lvPda.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
           this.lvPda.Location = new System.Drawing.Point(93, 378);
           this.lvPda.Name = "lvPda";
+          this.lvPda.ShowItemToolTips = true;
           this.lvPda.Size = new System.Drawing.Size(480, 143);
+          this.lvPda.SmallImageList = this.imageList1;
           this.lvPda.TabIndex = 9;
           this.lvPda.UseCompatibleStateImageBehavior = false;
           this.lvPda.View = System.Windows.Forms.View.SmallIcon;
           // 
-          // pda
+          // chPda
           // 
-          this.pda.Text = "PDA";
+          this.chPda.Text = "PDA";
+          // 
+          // imageList1
+          // 
+          this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+          this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+          this.imageList1.Images.SetKeyName(0, "online.ico");
+          this.imageList1.Images.SetKeyName(1, "offline.png");
           // 
           // timerUpdate
           // 
           this.timerUpdate.Interval = 10000;
           this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
           // 
+          // btGrp1
+          // 
+          this.btGrp1.Location = new System.Drawing.Point(13, 284);
+          this.btGrp1.Name = "btGrp1";
+          this.btGrp1.Size = new System.Drawing.Size(75, 23);
+          this.btGrp1.TabIndex = 10;
+          this.btGrp1.Text = "一";
+          this.btGrp1.UseVisualStyleBackColor = true;
+          this.btGrp1.Click += new System.EventHandler(this.btGrp1_Click);
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
           this.ClientSize = new System.Drawing.Size(584, 546);
+          this.Controls.Add(this.btGrp1);
           this.Controls.Add(this.lvPda);
           this.Controls.Add(this.txPda2Ip);
           this.Controls.Add(this.txPda1Ip);
@@ -199,8 +222,10 @@ namespace Master
       private System.Windows.Forms.TextBox txPda1Ip;
       private System.Windows.Forms.TextBox txPda2Ip;
       private System.Windows.Forms.ListView lvPda;
-      private System.Windows.Forms.ColumnHeader pda;
+      private System.Windows.Forms.ColumnHeader chPda;
       private System.Windows.Forms.Timer timerUpdate;
+      private System.Windows.Forms.ImageList imageList1;
+      private System.Windows.Forms.Button btGrp1;
     }
 }
 
