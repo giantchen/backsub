@@ -4,6 +4,9 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Web;
 using System.Collections;
 using System.Web.Services;
@@ -34,10 +37,17 @@ namespace Service
         SqlDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-          string name = (string) reader["Pda"];
-          DateTime time = (DateTime) reader["LastUpdate"];
-          string ip = (string) reader["IpAddr"];
-          Pda p = new Pda(name, ip, time);
+          string name = (string)reader["Pda"];
+          DateTime time = (DateTime)reader["LastUpdate"];
+          string ip = (string)reader["IpAddr"];
+          string owner = reader["Owner"] as string;
+          string unit = reader["Unit"] as string;
+          if (owner == null)
+            owner = "";
+          if (unit == null)
+            unit = "";
+
+          Pda p = new Pda(name, ip, time, owner, unit);
           pdas.Add(p);
         }
       }
@@ -100,7 +110,7 @@ namespace Service
         {
           command = new SqlCommand(
             "INSERT INTO PdaState (DeviceId) VALUES (@DeviceId); " +
-            "UPDATE PdaState SET [Pda] = 'PDA_'+LTRIM((SELECT COUNT(*) FROM [PdaState])) WHERE Id = @@IDENTITY;" +
+            "UPDATE PdaState SET [Pda] = 'PDA_'+RIGHT('00'+LTRIM((SELECT COUNT(*) FROM [PdaState])), 2) WHERE Id = @@IDENTITY;" +
             "SELECT [Pda] FROM PdaState WHERE DeviceId = @DeviceId"
             ,conn);
           command.Parameters.AddWithValue("@DeviceId", deviceId);
@@ -151,6 +161,55 @@ namespace Service
 
       return data;
     }
+  
+    [WebMethod]
+    public int SendImage(long imageId, string text, string[] pda)
+    {
+      int count;
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        StringBuilder sb = new StringBuilder();
+        foreach (string p in pda)
+        {
+          sb.AppendFormat("INSERT INTO [Shows] ([Pda], [ImageId], [TimeStamp], [Text]) VALUES ('{0}', {1}, @TimeStamp, @Text); ", p, imageId);
+        }
+        SqlCommand command = new SqlCommand(sb.ToString(), conn);
+        command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
+        command.Parameters.AddWithValue("@Text", text);
+        command.Connection.Open();
+        count = command.ExecuteNonQuery();
+      }
+      return count;
+    }
+    
+    [WebMethod]
+    public Show GetShow(string pda)
+    {
+      Show show = null;
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        SqlCommand command = new SqlCommand("SELECT TOP 1 [Images].[Image], [Shows].[TimeStamp], [Shows].[Text] FROM [Images], [Shows] " + 
+          "WHERE [Images].[Id] = [Shows].[ImageId] AND [Shows].[Pda] = @Pda ORDER BY [Shows].[Id] DESC", conn);
+        command.Parameters.AddWithValue("@Pda", pda);
+        command.Connection.Open();
+        SqlDataReader reader = command.ExecuteReader();
+        if (reader.Read())
+        {
+          show = new Show();
+          show.Image = (byte[])reader["Image"];
+          show.TimeStamp = (DateTime)reader["TimeStamp"];
+          show.Text = (string)reader["Text"];
+        }
+      }      
+      return show;
+    }
+  }
+
+  public class Show
+  {
+    public byte[] Image;
+    public DateTime TimeStamp;
+    public string Text;
   }
   
   public class Pda
@@ -158,12 +217,16 @@ namespace Service
     public string Name;
     public string IpAddr;
     public DateTime LastUpdate;
+    public string Owner;
+    public string Unit;
     
-    public Pda(string name, string ipAddr, DateTime lastUpdate)
+    public Pda(string name, string ipAddr, DateTime lastUpdate, string owner, string unit)
     {
       Name = name;
       IpAddr = ipAddr;
       LastUpdate = lastUpdate;
+      Owner = owner;
+      Unit = unit;
     }
     
     public Pda()
