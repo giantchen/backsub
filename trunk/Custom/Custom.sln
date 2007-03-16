@@ -56,6 +56,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "ViewerSetup", "ViewerSetup\ViewerSetup.vddproj", "{CECE2067-4F0B-44F2-B297-50BB0D9902D6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Custom.vsmdi
@@ -121,6 +127,12 @@ Global
 		{7B7E8053-9F24-4FF8-A872-010FE8FAAAA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B7E8053-9F24-4FF8-A872-010FE8FAAAA3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7B7E8053-9F24-4FF8-A872-010FE8FAAAA3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Debug|.NET.ActiveCfg = Debug
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Debug|Any CPU.ActiveCfg = Debug
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Release|.NET.ActiveCfg = Release
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Release|Any CPU.ActiveCfg = Release
+		{CECE2067-4F0B-44F2-B297-50BB0D9902D6}.Release|Mixed Platforms.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

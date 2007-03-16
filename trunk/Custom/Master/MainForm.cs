@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
+using Master.localhost;
 
 namespace Master
 {
@@ -18,6 +19,7 @@ namespace Master
     IntPtr hBoard;
     bool isActive = false;
     private string basefilename;
+    Service service = new Service();
 
     public MainForm()
     {
@@ -140,6 +142,28 @@ namespace Master
     private void MainForm_Load(object sender, EventArgs e)
     {
       btStart_Click(sender, e);
+    }
+
+    private void timerUpdate_Tick(object sender, EventArgs e)
+    {
+      Pda[] pdas = service.ListAllPdas();
+      foreach (Pda p in pdas)
+      {
+        ListViewItem item = new ListViewItem(p.Name);
+
+        item.ToolTipText = p.IpAddr;
+        if (DateTime.Now.Subtract(p.LastUpdate).TotalMinutes < 5)
+        {
+          item.Group = lvPda.Groups["Online"];
+          item.BackColor = Color.Pink;
+        }
+        else
+        {
+          item.Group = lvPda.Groups["Offline"];
+          item.BackColor = Color.Gray;
+        }
+        lvPda.Items.Add(item);
+      }
     }
   }
 }
