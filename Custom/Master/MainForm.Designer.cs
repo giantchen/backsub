@@ -28,6 +28,8 @@ namespace Master
         private void InitializeComponent()
         {
           this.components = new System.ComponentModel.Container();
+          System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Online", System.Windows.Forms.HorizontalAlignment.Left);
+          System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Offline", System.Windows.Forms.HorizontalAlignment.Left);
           this.picMain = new System.Windows.Forms.PictureBox();
           this.btStart = new System.Windows.Forms.Button();
           this.btStop = new System.Windows.Forms.Button();
@@ -38,18 +40,18 @@ namespace Master
           this.txLocalIp = new System.Windows.Forms.TextBox();
           this.txPda1Ip = new System.Windows.Forms.TextBox();
           this.txPda2Ip = new System.Windows.Forms.TextBox();
+          this.lvPda = new System.Windows.Forms.ListView();
+          this.pda = new System.Windows.Forms.ColumnHeader();
+          this.timerUpdate = new System.Windows.Forms.Timer(this.components);
           ((System.ComponentModel.ISupportInitialize)(this.picMain)).BeginInit();
           this.SuspendLayout();
           // 
           // picMain
           // 
-          this.picMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                      | System.Windows.Forms.AnchorStyles.Left)
-                      | System.Windows.Forms.AnchorStyles.Right)));
           this.picMain.BackColor = System.Drawing.Color.White;
           this.picMain.Location = new System.Drawing.Point(93, 12);
           this.picMain.Name = "picMain";
-          this.picMain.Size = new System.Drawing.Size(768, 576);
+          this.picMain.Size = new System.Drawing.Size(480, 360);
           this.picMain.TabIndex = 0;
           this.picMain.TabStop = false;
           // 
@@ -75,9 +77,9 @@ namespace Master
           // 
           // statusStrip
           // 
-          this.statusStrip.Location = new System.Drawing.Point(0, 591);
+          this.statusStrip.Location = new System.Drawing.Point(0, 524);
           this.statusStrip.Name = "statusStrip";
-          this.statusStrip.Size = new System.Drawing.Size(873, 22);
+          this.statusStrip.Size = new System.Drawing.Size(584, 22);
           this.statusStrip.TabIndex = 3;
           this.statusStrip.Text = "statusStrip";
           // 
@@ -130,11 +132,39 @@ namespace Master
           this.txPda2Ip.TabIndex = 8;
           this.txPda2Ip.Text = "192.168.1.4";
           // 
+          // lvPda
+          // 
+          this.lvPda.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.pda});
+          listViewGroup1.Header = "Online";
+          listViewGroup1.Name = "Online";
+          listViewGroup2.Header = "Offline";
+          listViewGroup2.Name = "Offline";
+          this.lvPda.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1,
+            listViewGroup2});
+          this.lvPda.Location = new System.Drawing.Point(93, 378);
+          this.lvPda.Name = "lvPda";
+          this.lvPda.Size = new System.Drawing.Size(480, 143);
+          this.lvPda.TabIndex = 9;
+          this.lvPda.UseCompatibleStateImageBehavior = false;
+          this.lvPda.View = System.Windows.Forms.View.SmallIcon;
+          // 
+          // pda
+          // 
+          this.pda.Text = "PDA";
+          // 
+          // timerUpdate
+          // 
+          this.timerUpdate.Interval = 10000;
+          this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-          this.ClientSize = new System.Drawing.Size(873, 613);
+          this.ClientSize = new System.Drawing.Size(584, 546);
+          this.Controls.Add(this.lvPda);
           this.Controls.Add(this.txPda2Ip);
           this.Controls.Add(this.txPda1Ip);
           this.Controls.Add(this.txLocalIp);
@@ -168,6 +198,9 @@ namespace Master
       private System.Windows.Forms.TextBox txLocalIp;
       private System.Windows.Forms.TextBox txPda1Ip;
       private System.Windows.Forms.TextBox txPda2Ip;
+      private System.Windows.Forms.ListView lvPda;
+      private System.Windows.Forms.ColumnHeader pda;
+      private System.Windows.Forms.Timer timerUpdate;
     }
 }
 

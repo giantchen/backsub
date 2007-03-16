@@ -32,6 +32,9 @@ namespace Viewer
           this.picMain = new System.Windows.Forms.PictureBox();
           this.btRedraw = new System.Windows.Forms.Button();
           this.textBox1 = new System.Windows.Forms.TextBox();
+          this.textBox2 = new System.Windows.Forms.TextBox();
+          this.textBox3 = new System.Windows.Forms.TextBox();
+          this.timerUpdate = new System.Windows.Forms.Timer();
           this.SuspendLayout();
           // 
           // picMain
@@ -58,20 +61,45 @@ namespace Viewer
           this.textBox1.TabIndex = 3;
           this.textBox1.Text = "IP: ";
           // 
+          // textBox2
+          // 
+          this.textBox2.Location = new System.Drawing.Point(4, 213);
+          this.textBox2.Name = "textBox2";
+          this.textBox2.Size = new System.Drawing.Size(233, 21);
+          this.textBox2.TabIndex = 5;
+          this.textBox2.Text = "ID: ";
+          // 
+          // textBox3
+          // 
+          this.textBox3.Location = new System.Drawing.Point(82, 245);
+          this.textBox3.Name = "textBox3";
+          this.textBox3.Size = new System.Drawing.Size(100, 21);
+          this.textBox3.TabIndex = 7;
+          // 
+          // timerUpdate
+          // 
+          this.timerUpdate.Interval = 10000;
+          this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
+          // 
           // MainForm
           // 
           this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
           this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
           this.AutoScroll = true;
           this.ClientSize = new System.Drawing.Size(240, 268);
+          this.Controls.Add(this.textBox3);
+          this.Controls.Add(this.textBox2);
           this.Controls.Add(this.textBox1);
           this.Controls.Add(this.btRedraw);
           this.Controls.Add(this.picMain);
           this.KeyPreview = true;
           this.Menu = this.mainMenu1;
+          this.MinimizeBox = false;
           this.Name = "MainForm";
           this.Text = "²é¿´";
+          this.Closed += new System.EventHandler(this.MainForm_Closed);
           this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
+          this.Load += new System.EventHandler(this.MainForm_Load);
           this.ResumeLayout(false);
 
         }
@@ -81,6 +109,9 @@ namespace Viewer
       private System.Windows.Forms.PictureBox picMain;
       private System.Windows.Forms.Button btRedraw;
         private System.Windows.Forms.TextBox textBox1;
+      private System.Windows.Forms.TextBox textBox2;
+      private System.Windows.Forms.TextBox textBox3;
+      private System.Windows.Forms.Timer timerUpdate;
     }
 }
 

@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Viewer.localhost;
 
 namespace Viewer
 {
@@ -17,6 +18,10 @@ namespace Viewer
     Thread listenerThread_;
     internal string url = "http://fuzzy-develop/";
     const int portToListen = 8899;
+    string deviceId = null;
+    string pdaName = null;
+    string ipAddr = null;
+    Service service;
     
     public MainForm()
     {
@@ -24,13 +29,19 @@ namespace Viewer
 
       listener_ = new UDPListener(portToListen, this);
       listenerThread_ = new Thread(new ThreadStart(listener_.Run));
-      listenerThread_.Start();
+
       string hostname = Dns.GetHostName();
       IPHostEntry ips = Dns.GetHostEntry(hostname);
       foreach (IPAddress ip in ips.AddressList)
       {
         textBox1.Text += ip.ToString() + ", ";
+        if (ipAddr == null)
+          ipAddr = ip.ToString();
       }
+
+      deviceId = Program.GetDeviceID();
+      textBox2.Text += deviceId;
+      service = new Service();
     }
 
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -56,11 +67,8 @@ namespace Viewer
       if ((e.KeyCode == Keys.Enter))
       {
         // Enter
-        UdpClient uc = new UdpClient();
-        IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), portToListen);
-        uc.Send(Encoding.Default.GetBytes("stop"), 4, ep);
-        Thread.Sleep(500);
-        Application.Exit();
+        //Application.Exit();
+        this.Close();
       }
     }
 
@@ -81,6 +89,29 @@ namespace Viewer
         MessageBox.Show(ex.Message, "≥ˆœ÷“Ï≥£");
       }
     }
+
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+      pdaName = service.RegisterPda(deviceId);
+      textBox3.Text = pdaName;
+      timerUpdate_Tick(sender, e);
+      timerUpdate.Enabled = true;
+      listenerThread_.Start();
+    }
+    
+    private void MainForm_Closed(object sender, EventArgs e)
+    {
+      UdpClient uc = new UdpClient();
+      IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), portToListen);
+      uc.Send(Encoding.Default.GetBytes("stop"), 4, ep);
+      Thread.Sleep(500);
+
+    }
+
+    private void timerUpdate_Tick(object sender, EventArgs e)
+    {
+      service.UpdatePda(deviceId, string.Format("{0}:{1}", ipAddr, portToListen));
+    }
   }
 
   class UDPListener
@@ -90,7 +121,10 @@ namespace Viewer
 
     public void Run()
     {
-      UdpClient listener = new UdpClient(portToListen_);
+      //try
+      //{
+        UdpClient listener = new UdpClient(portToListen_);
+      //} catch(E)
       IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
       try
       {

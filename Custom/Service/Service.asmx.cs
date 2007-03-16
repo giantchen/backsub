@@ -46,20 +46,21 @@ namespace Service
     }
     
     [WebMethod]
-    public int UpdatePda(string pdaName, string ipAddr)
+    public int UpdatePda(string deviceId, string ipAddr)
     {
       int count = -1;
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         //try
         //{
-        SqlCommand command = new SqlCommand("UPDATE PdaState SET LastUpdate = @LastUpdate, IpAddr = @IpAddr WHERE Pda = @Pda", conn);
+        SqlCommand command = new SqlCommand("UPDATE PdaState SET LastUpdate = @LastUpdate, IpAddr = @IpAddr WHERE DeviceId = @DeviceId", conn);
         command.Parameters.AddWithValue("@LastUpdate", DateTime.Now);
         command.Parameters.AddWithValue("@IpAddr", ipAddr);
-        command.Parameters.AddWithValue("@Pda", pdaName);
+        command.Parameters.AddWithValue("@DeviceId", deviceId);
         command.Connection.Open();
         count = command.ExecuteNonQuery();
 
+        /*
         if (count == 0)
         {
           command = new SqlCommand("INSERT INTO PdaState (Pda, IpAddr, LastUpdate) VALUES (@Pda, @IpAddr, @LastUpdate)", conn);
@@ -68,6 +69,7 @@ namespace Service
           command.Parameters.AddWithValue("@Pda", pdaName);
           count = command.ExecuteNonQuery();
         }
+        */
         //}
         /*
         catch (Exception ex)
@@ -77,6 +79,40 @@ namespace Service
         */
       } 
       return count;
+    }
+
+    [WebMethod]
+    public string RegisterPda(string deviceId)
+    {
+      string pdaName = null;
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        SqlCommand command = new SqlCommand("SELECT [Pda] FROM PdaState WHERE DeviceId = @DeviceId", conn);
+        command.Parameters.AddWithValue("@DeviceId", deviceId);
+        command.Connection.Open();
+        object ret = command.ExecuteScalar();
+
+        if (ret != null)
+        {
+          pdaName = (string) ret;
+        }
+        else
+        {
+          command = new SqlCommand(
+            "INSERT INTO PdaState (DeviceId) VALUES (@DeviceId); " +
+            "UPDATE PdaState SET [Pda] = 'PDA_'+LTRIM((SELECT COUNT(*) FROM [PdaState])) WHERE Id = @@IDENTITY;" +
+            "SELECT [Pda] FROM PdaState WHERE DeviceId = @DeviceId"
+            ,conn);
+          command.Parameters.AddWithValue("@DeviceId", deviceId);
+          ret = command.ExecuteScalar();
+
+          if (ret != null)
+          {
+            pdaName = (string)ret;
+          }
+        }
+      }
+      return pdaName;
     }
     
     [WebMethod]
