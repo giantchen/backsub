@@ -15,7 +15,7 @@
             ForeColor="#000040">
             <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
             <Columns>
-                <asp:CommandField ButtonType="Button" ShowEditButton="True" />
+                <asp:CommandField ButtonType="Button" ShowEditButton="True" CancelText="取消" EditText="修改" UpdateText="保存" />
                 <asp:BoundField DataField="Pda" HeaderText="PDA" ReadOnly="True" SortExpression="Pda" />
                 <asp:BoundField DataField="Owner" HeaderText="使用人" SortExpression="Owner" />
                 <asp:BoundField DataField="Unit" HeaderText="科室" SortExpression="Unit" />

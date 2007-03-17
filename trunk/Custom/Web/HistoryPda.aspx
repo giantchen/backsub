@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <title>Untitled Page</title>
+    <title>PDA ÀúÊ·</title>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -15,7 +15,7 @@
         </asp:DropDownList><asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:Custom %>"
             SelectCommand="SELECT [Pda], [Owner], [Unit] FROM [PdaState] ORDER BY [Pda]"></asp:SqlDataSource>
         <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AutoGenerateColumns="False"
-            CellPadding="4" DataKeyNames="Id" DataSourceID="SqlDataSource1" ForeColor="#333333">
+            CellPadding="4" DataKeyNames="Id" DataSourceID="SqlDataSource1" ForeColor="#333333" EmptyDataText="There are no data records to display.">
             <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
             <Columns>
                 <asp:BoundField DataField="Pda" HeaderText="Pda" SortExpression="Pda" />

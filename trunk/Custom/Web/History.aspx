@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <title>Untitled Page</title>
+    <title>¿˙ ∑÷∏¡Ó</title>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -14,7 +14,7 @@
             SelectCommand="SELECT [ImageId], [TimeStamp], [Message], [Pdas], [Id] FROM [Sends] ORDER BY [Id] DESC">
         </asp:SqlDataSource>
         <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AutoGenerateColumns="False"
-            DataKeyNames="Id" DataSourceID="SqlDataSource1" CellPadding="4" ForeColor="#333333">
+            DataKeyNames="Id" DataSourceID="SqlDataSource1" CellPadding="4" ForeColor="#333333" EmptyDataText="There are no data records to display.">
             <Columns>
                 <asp:ImageField DataImageUrlField="ImageId" DataImageUrlFormatString="GetImage.aspx?id={0}" HeaderText="ÕºœÒ">
                     <ControlStyle Height="90px" Width="120px" />
