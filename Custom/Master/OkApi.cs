@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Master
 {
-  /*
+  //*
   public class OkApi
   {
     public const int TARGET_SCREEN = -1;

@@ -23,7 +23,7 @@ namespace Service
   [ToolboxItem(false)]
   public class Service : System.Web.Services.WebService
   {
-    static string connStr = ConfigurationManager.ConnectionStrings["Custom"].ConnectionString;
+    static string connStr = ConfigurationManager.ConnectionStrings["Custom2"].ConnectionString;
     
     [WebMethod]
     public Pda[] ListAllPdas()
@@ -188,20 +188,25 @@ namespace Service
     }
   
     //[WebMethod]
-    private int SendImage(long imageId, string text, string[] pdas)
+    private int SendImage(long imageId, string message, string[] pdas)
     {
       int count;
       
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         StringBuilder sb = new StringBuilder();
+
+        sb.AppendFormat(
+          "INSERT INTO [Sends] ([ImageId], [TimeStamp], [Message], [Pdas]) VALUES ({0}, @TimeStamp, @Message, '{1}'); ",
+          imageId, string.Join(", ", pdas));
+
         foreach (string p in pdas)
         {
-          sb.AppendFormat("INSERT INTO [Shows] ([Pda], [ImageId], [TimeStamp], [Text]) VALUES ('{0}', {1}, @TimeStamp, @Text); ", p, imageId);
+          sb.AppendFormat("INSERT INTO [Shows] ([Pda], [ImageId], [TimeStamp], [Message]) VALUES ('{0}', {1}, @TimeStamp, @Message); ", p, imageId);
         }
         SqlCommand command = new SqlCommand(sb.ToString(), conn);
         command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
-        command.Parameters.AddWithValue("@Text", text);
+        command.Parameters.AddWithValue("@Message", message);
         command.Connection.Open();
         count = command.ExecuteNonQuery();
       }
@@ -209,13 +214,16 @@ namespace Service
     }
     
     [WebMethod]
-    public void SendImage(byte[] image, string text, string[] pdas)
+    public void SendImage(byte[] image, string message, string[] pdas)
     {
       if (image == null || pdas.Length == 0)
-        return; 
-      
+        return;
+
+      if (message == null)
+        message = "";
+        
       long imageId = AddImage(image);
-      SendImage(imageId, text, pdas);
+      SendImage(imageId, message, pdas);
     }
     
     [WebMethod]
@@ -224,7 +232,7 @@ namespace Service
       Show show = null;
       using (SqlConnection conn = new SqlConnection(connStr))
       {
-        SqlCommand command = new SqlCommand("SELECT TOP 1 [Images].[Image], [Shows].[TimeStamp], [Shows].[Text] FROM [Images], [Shows] " + 
+        SqlCommand command = new SqlCommand("SELECT TOP 1 [Images].[Image], [Shows].[TimeStamp], [Shows].[Message] FROM [Images], [Shows] " + 
           "WHERE [Images].[Id] = [Shows].[ImageId] AND [Shows].[Pda] = @Pda ORDER BY [Shows].[Id] DESC", conn);
         command.Parameters.AddWithValue("@Pda", pda);
         command.Connection.Open();
@@ -234,7 +242,7 @@ namespace Service
           show = new Show();
           show.Image = (byte[])reader["Image"];
           show.TimeStamp = (DateTime)reader["TimeStamp"];
-          show.Text = (string)reader["Text"];
+          show.Message = (string)reader["Message"];
         }
       }      
       return show;
@@ -245,7 +253,7 @@ namespace Service
   {
     public byte[] Image;
     public DateTime TimeStamp;
-    public string Text;
+    public string Message;
   }
   
   public class Pda
