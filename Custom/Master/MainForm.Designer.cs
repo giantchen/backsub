@@ -99,6 +99,9 @@ namespace Master
           // 
           // lvPda
           // 
+          this.lvPda.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                      | System.Windows.Forms.AnchorStyles.Left)
+                      | System.Windows.Forms.AnchorStyles.Right)));
           this.lvPda.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chPda});
           listViewGroup3.Header = "³öÇÚ";
@@ -113,6 +116,7 @@ namespace Master
           this.lvPda.ShowItemToolTips = true;
           this.lvPda.Size = new System.Drawing.Size(480, 143);
           this.lvPda.SmallImageList = this.imageList1;
+          this.lvPda.Sorting = System.Windows.Forms.SortOrder.Ascending;
           this.lvPda.TabIndex = 9;
           this.lvPda.UseCompatibleStateImageBehavior = false;
           this.lvPda.View = System.Windows.Forms.View.SmallIcon;
@@ -165,9 +169,9 @@ namespace Master
           this.Controls.Add(this.btStop);
           this.Controls.Add(this.btStart);
           this.Controls.Add(this.picMain);
-          this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
           this.KeyPreview = true;
           this.MaximizeBox = false;
+          this.MinimumSize = new System.Drawing.Size(592, 573);
           this.Name = "MainForm";
           this.Text = "¼àÊÓ";
           this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
