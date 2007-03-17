@@ -22,7 +22,6 @@ namespace Master
     Service service = new Service();
     byte[] currentImage=null;
     Dictionary<string, List<string>> groups = new Dictionary<string, List<string>>();
-    List<Button> btGroups = new List<Button>();
     EditMsgForm editMsgForm = new EditMsgForm();
     
     public MainForm()
@@ -73,12 +72,11 @@ namespace Master
           bt.Text = grpName;
           toolTip1.SetToolTip(bt, string.Join(", ", pdalist.ToArray()));
           bt.UseVisualStyleBackColor = true;
-          bt.Click+= new EventHandler(this.btGrp_Click);
-          
-          //btGroups.Add(bt);
+          bt.MouseClick += new MouseEventHandler(this.btGrp_MouseClick);
           Controls.Add(bt);
         }
-      }catch(Exception e)
+      }
+      catch(Exception e)
       {
         MessageBox.Show(string.Format("找不到 {0} 或文件格式有误！",fn), "出错",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -88,6 +86,7 @@ namespace Master
     private void MainForm_Load(object sender, EventArgs e)
     {
       //btStart_Click(sender, e);
+      btStart_MouseClick(sender, null);
       //lvPda.Items.Add("PDA_5", 1);
       //lvPda.Items.Add("PDA_6", 1);
       timerUpdate_Tick(sender, e);
@@ -99,28 +98,11 @@ namespace Master
       Console.WriteLine(result);
     }
 
-    private void btStart_Click(object sender, EventArgs e)
-    {
-      bool ret = startCapture();
-      Console.WriteLine(ret);
-      if (ret)
-      {
-        isActive = true;
-      }
-    }
-
     private bool startCapture()
     {
       OkApi.SetToWndRect(hBoard, picMain.Handle);
       int ret = OkApi.CaptureToScreen(hBoard);
       return ret > 0;
-    }
-
-    private void btStop_Click(object sender, EventArgs e)
-    {
-      stopCapture();
-      isActive = false;
-      saveFile();
     }
 
     private void stopCapture()
@@ -141,7 +123,7 @@ namespace Master
         Bitmap picture = new Bitmap(fs);
         picMain.Image = (Image)picture;
         fs.Close();
-        //File.Delete(filename);
+        File.Delete(filename);
       }
       else
       {
@@ -245,17 +227,7 @@ namespace Master
       
     }
 
-    private void btGrpAll_Click(object sender, EventArgs e)
-    {
-      Pda[] pdas = service.ListAllPdas();
-      string[] p = new string[pdas.Length];
-      for (int i = 0; i < p.Length; ++i)
-        p[i] = pdas[i].Name;
-
-      sendPda(p, btGrpAll.Text);
-    }
-
-    private void btGrp_Click(object sender, EventArgs e)
+    private void btGrp_MouseClick(object sender, MouseEventArgs e)
     {
       string grpName = ((Button)sender).Text;
       sendPda(groups[grpName].ToArray(), grpName);
@@ -296,15 +268,38 @@ namespace Master
       if (e.KeyChar==32)
       {
         if (isActive)
-          btStop_Click(sender, null);
-        else 
-          btStart_Click(sender, null);
+          btStop_MouseClick(sender, null);
+        else
+          btStart_MouseClick(sender, null);
         
         e.Handled = true;
       }
-      
     }
 
+    private void btGrpAll_MouseClick(object sender, MouseEventArgs e)
+    {
+      Pda[] pdas = service.ListAllPdas();
+      string[] p = new string[pdas.Length];
+      for (int i = 0; i < p.Length; ++i)
+        p[i] = pdas[i].Name;
 
+      sendPda(p, btGrpAll.Text);
+    }
+
+    private void btStart_MouseClick(object sender, MouseEventArgs e)
+    {
+      bool ret = startCapture();
+      if (ret)
+      {
+        isActive = true;
+      }
+    }
+
+    private void btStop_MouseClick(object sender, MouseEventArgs e)
+    {
+      stopCapture();
+      isActive = false;
+      saveFile();
+    }
   }
 }

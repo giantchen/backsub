@@ -61,27 +61,27 @@ namespace Master
           this.btStart.Location = new System.Drawing.Point(12, 12);
           this.btStart.Name = "btStart";
           this.btStart.Size = new System.Drawing.Size(75, 23);
-          this.btStart.TabIndex = 1;
+          this.btStart.TabIndex = 2;
           this.btStart.Text = "Start";
           this.btStart.UseVisualStyleBackColor = true;
-          this.btStart.Click += new System.EventHandler(this.btStart_Click);
+          this.btStart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btStart_MouseClick);
           // 
           // btStop
           // 
           this.btStop.Location = new System.Drawing.Point(12, 41);
           this.btStop.Name = "btStop";
           this.btStop.Size = new System.Drawing.Size(75, 23);
-          this.btStop.TabIndex = 2;
+          this.btStop.TabIndex = 3;
           this.btStop.Text = "Stop";
           this.btStop.UseVisualStyleBackColor = true;
-          this.btStop.Click += new System.EventHandler(this.btStop_Click);
+          this.btStop.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btStop_MouseClick);
           // 
           // statusStrip
           // 
           this.statusStrip.Location = new System.Drawing.Point(0, 524);
           this.statusStrip.Name = "statusStrip";
           this.statusStrip.Size = new System.Drawing.Size(584, 22);
-          this.statusStrip.TabIndex = 3;
+          this.statusStrip.TabIndex = 4;
           this.statusStrip.Text = "statusStrip";
           // 
           // timerMove
@@ -95,7 +95,7 @@ namespace Master
           this.txLocalIp.Multiline = true;
           this.txLocalIp.Name = "txLocalIp";
           this.txLocalIp.Size = new System.Drawing.Size(75, 33);
-          this.txLocalIp.TabIndex = 6;
+          this.txLocalIp.TabIndex = 1;
           // 
           // lvPda
           // 
@@ -141,7 +141,7 @@ namespace Master
           this.btGrpAll.TabIndex = 10;
           this.btGrpAll.Text = "È«²¿";
           this.btGrpAll.UseVisualStyleBackColor = true;
-          this.btGrpAll.Click += new System.EventHandler(this.btGrpAll_Click);
+          this.btGrpAll.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btGrpAll_MouseClick);
           // 
           // label1
           // 

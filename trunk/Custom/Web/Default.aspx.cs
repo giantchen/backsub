@@ -14,4 +14,10 @@ public partial class _Default : System.Web.UI.Page
     {
 
     }
+  /*
+  protected void Button1_Click(object sender, EventArgs e)
+  {
+    Response.Redirect("HistoryPda.aspx?pda=" + DropDownList1.SelectedItem.Text);
+  }
+  */
 }

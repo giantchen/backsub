@@ -70,7 +70,7 @@ namespace Viewer
           this.tbMsg.Location = new System.Drawing.Point(4, 213);
           this.tbMsg.Multiline = true;
           this.tbMsg.Name = "tbMsg";
-          this.tbMsg.Size = new System.Drawing.Size(219, 52);
+          this.tbMsg.Size = new System.Drawing.Size(233, 52);
           this.tbMsg.TabIndex = 9;
           // 
           // MainForm

@@ -9,6 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
+        <asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="~/Default.aspx">»ØÖ÷Ò³</asp:HyperLink>
         <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True"
             AutoGenerateColumns="False" CellPadding="4" DataSourceID="SqlDataSource1" EmptyDataText="There are no data records to display."
             ForeColor="#000040">

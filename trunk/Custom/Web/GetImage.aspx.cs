@@ -22,13 +22,14 @@ public partial class GetImage : System.Web.UI.Page
     {
       SqlCommand command = new SqlCommand("SELECT [Image], [TimeStamp] FROM [Images] WHERE Id = @Id", conn);
       string queryId = Request.QueryString["Id"];
-      if (string.IsNullOrEmpty(queryId))
+      long imageId;
+      if (string.IsNullOrEmpty(queryId) || !long.TryParse(queryId, out imageId))
       {
         Label1.Text = "È±ÉÙ²ÎÊý£¡";
       }
       else
       {
-        long imageId = long.Parse(queryId);
+        //long imageId = long.Parse(queryId);
         command.Parameters.AddWithValue("@Id", imageId);
         command.Connection.Open();
         SqlDataReader reader = command.ExecuteReader();
