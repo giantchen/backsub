@@ -20,7 +20,9 @@ namespace Master
     bool isActive = false;
     private string basefilename;
     Service service = new Service();
+    byte[] currentImage=null;
     //Dictionary<string, 
+    
     public MainForm()
     {
       InitializeComponent();
@@ -85,13 +87,14 @@ namespace Master
     private void saveFile()
     {
       basefilename = string.Format(@"{0}.jpg", DateTime.Now.ToString("yyyyMMdd_HHmmss_ffffff"));
-      String filename = @"\figs\" + basefilename;
+      String filename = @"D:\figs\" + basefilename;
       int filesize = OkApi.SaveImageFile(hBoard, filename,
         80, OkApi.TARGET_SCREEN, 0, 1);
       if (filesize > 0)
       {
+        currentImage = File.ReadAllBytes(filename);
         FileStream fs = File.OpenRead(filename);
-        Bitmap picture = new Bitmap((Stream)fs);
+        Bitmap picture = new Bitmap(fs);
         picMain.Image = (Image)picture;
         fs.Close();
         //File.Delete(filename);
@@ -139,7 +142,7 @@ namespace Master
       }
     }
     
-    private void sendPda(string pda)
+    private void notifyPda(string pda)
     {
       byte[] data = Encoding.Default.GetBytes("refresh");
       ListViewItem item = lvPda.Items[pda];
@@ -198,7 +201,14 @@ namespace Master
 
     private void btGrp1_Click(object sender, EventArgs e)
     {
-      sendPda("Pda_01");
+      if (isActive)
+      {
+        stopCapture();
+        saveFile();
+        startCapture();
+      }
+      service.SendImage(currentImage, "Hello", new string[]{"PDA_01"});
+      notifyPda("PDA_01");
     }
   }
 }

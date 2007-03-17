@@ -126,7 +126,7 @@ namespace Service
     }
     
     [WebMethod]
-    public long AddImage(byte[] date)
+    public long AddImage(byte[] data)
     {
       long imageId = 0;
       
@@ -135,7 +135,7 @@ namespace Service
         SqlCommand command = new SqlCommand("SET NOCOUNT ON; INSERT INTO Images ([Image], [TimeStamp]) VALUES (@Image, @TimeStamp); SELECT @@IDENTITY", conn);
         command.Parameters.AddWithValue("@TimeStamp", DateTime.Now);
         command.Parameters.Add("@Image", SqlDbType.Image);
-        command.Parameters["@Image"].Value = date;
+        command.Parameters["@Image"].Value = data;
         command.Connection.Open();
         imageId = (long)(decimal)command.ExecuteScalar();
       }
@@ -162,14 +162,14 @@ namespace Service
       return data;
     }
   
-    [WebMethod]
-    public int SendImage(long imageId, string text, string[] pda)
+    //[WebMethod]
+    private int SendImage(long imageId, string text, string[] pdas)
     {
       int count;
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         StringBuilder sb = new StringBuilder();
-        foreach (string p in pda)
+        foreach (string p in pdas)
         {
           sb.AppendFormat("INSERT INTO [Shows] ([Pda], [ImageId], [TimeStamp], [Text]) VALUES ('{0}', {1}, @TimeStamp, @Text); ", p, imageId);
         }
@@ -180,6 +180,13 @@ namespace Service
         count = command.ExecuteNonQuery();
       }
       return count;
+    }
+    
+    [WebMethod]
+    public void SendImage(byte[] image, string text, string[] pdas)
+    {
+      long imageId = AddImage(image);
+      SendImage(imageId, text, pdas);
     }
     
     [WebMethod]
