@@ -69,7 +69,8 @@ namespace Viewer
       {
         // Enter
         //Application.Exit();
-        this.Close();
+        // this.Close();
+        btRedraw_Click(sender, e);
       }
     }
 
@@ -100,7 +101,8 @@ namespace Viewer
     private void MainForm_Load(object sender, EventArgs e)
     {
       pdaName = service.RegisterPda(deviceId);
-      tbMsg.Text = pdaName;
+      Pda p = service.GetPda(pdaName);
+      textBox1.Text += string.Format("{0}, {1}, {2}", pdaName, p.Owner, p.Unit);
       timerUpdate_Tick(sender, e);
       timerUpdate.Enabled = true;
       listenerThread_.Start();

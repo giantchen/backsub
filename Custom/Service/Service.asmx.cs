@@ -33,26 +33,51 @@ namespace Service
       {
         conn.Open();
         SqlCommand command = new SqlCommand("SELECT * FROM PdaState ", conn);
-        //SqlDataReader reader = command.ExecuteReader();
+
         SqlDataReader reader = command.ExecuteReader();
         while (reader.Read())
         {
-          string name = (string)reader["Pda"];
-          DateTime time = (DateTime)reader["LastUpdate"];
-          string ip = (string)reader["IpAddr"];
-          string owner = reader["Owner"] as string;
-          string unit = reader["Unit"] as string;
-          if (owner == null)
-            owner = "";
-          if (unit == null)
-            unit = "";
-
-          Pda p = new Pda(name, ip, time, owner, unit);
+          Pda p = ReadPda(reader);
           pdas.Add(p);
         }
       }
 
       return pdas.ToArray();
+    }
+
+    private static Pda ReadPda(SqlDataReader reader)
+    {
+      string name = (string)reader["Pda"];
+      DateTime time = (DateTime)reader["LastUpdate"];
+      string ip = (string)reader["IpAddr"];
+      string owner = reader["Owner"] as string;
+      string unit = reader["Unit"] as string;
+      if (owner == null)
+        owner = "";
+      if (unit == null)
+        unit = "";
+
+      return new Pda(name, ip, time, owner, unit);
+    }
+
+    [WebMethod]
+    public Pda GetPda(string pdaName)
+    {
+      Pda pda = null;
+      
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        conn.Open();
+        SqlCommand command = new SqlCommand("SELECT * FROM PdaState WHERE [Pda] = @Pda", conn);
+        command.Parameters.AddWithValue("@Pda", pdaName);
+        SqlDataReader reader = command.ExecuteReader();
+        if (reader.Read())
+        {
+          pda = ReadPda(reader);
+        }
+      }
+
+      return pda;
     }
     
     [WebMethod]
@@ -166,6 +191,7 @@ namespace Service
     private int SendImage(long imageId, string text, string[] pdas)
     {
       int count;
+      
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         StringBuilder sb = new StringBuilder();
@@ -185,6 +211,9 @@ namespace Service
     [WebMethod]
     public void SendImage(byte[] image, string text, string[] pdas)
     {
+      if (image == null || pdas.Length == 0)
+        return; 
+      
       long imageId = AddImage(image);
       SendImage(imageId, text, pdas);
     }

@@ -4,13 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <title>Untitled Page</title>
+    <title>系统状态</title>
 </head>
 <body>
     <form id="form1" runat="server">
     <div>
-    
-    </div>
+        <asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="~/EditPda.aspx">编辑 PDA 信息</asp:HyperLink>&nbsp;</div>
     </form>
 </body>
 </html>
