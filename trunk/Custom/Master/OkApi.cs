@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Master
 {
+  /*
   public class OkApi
   {
     public const int TARGET_SCREEN = -1;
@@ -35,7 +36,45 @@ namespace Master
     [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okSaveImageFile", SetLastError = true)]
     public static extern int SaveImageFile(IntPtr handle, string filename, int first, int source,int start, int num);
   }
+  /*/
+  public class OkApi
+  {
+    public const int TARGET_SCREEN = -1;
 
+    //[System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okOpenBoard", SetLastError = true)]
+    public static IntPtr OpenBoard(ref int index) {
+      return (IntPtr)1; }
+
+    //[System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okCloseBoard", SetLastError = true)]
+    public static int CloseBoard(IntPtr handle)
+    {
+      return 0; }
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okGetLastError", SetLastError = true)]
+    public static extern int GetLastError(IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okGetTypeCode", SetLastError = true)]
+    public static extern short GetTypeCode(IntPtr handle, StringBuilder boardName);
+
+    //[System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okSetCaptureParam", SetLastError = true)]
+    public static int SetCaptureParam(IntPtr handle, ushort wParam, int lParam)
+    {
+      return 0; }
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okSetToWndRect", SetLastError = true)]
+    public static extern int SetToWndRect(IntPtr handle, IntPtr hwnd);
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okCaptureToScreen", SetLastError = true)]
+    public static extern int CaptureToScreen(IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okStopCapture", SetLastError = true)]
+    public static extern int StopCapture(IntPtr handle);
+
+    [System.Runtime.InteropServices.DllImport("okapi32.DLL", EntryPoint = "okSaveImageFile", SetLastError = true)]
+    public static extern int SaveImageFile(IntPtr handle, string filename, int first, int source, int start, int num);
+  }
+  //*/
+  
   public enum ECapture
   {
     CAPTURE_RESETALL = 0,           //reset all to sys default

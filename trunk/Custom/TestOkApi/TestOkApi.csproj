@@ -73,6 +73,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Web References\localhost\Service.wsdl" />
+    <None Include="Web References\localhost\Show.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Master\Master.csproj">

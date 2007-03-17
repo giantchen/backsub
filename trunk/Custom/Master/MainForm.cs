@@ -21,7 +21,9 @@ namespace Master
     private string basefilename;
     Service service = new Service();
     byte[] currentImage=null;
-    //Dictionary<string, 
+    Dictionary<string, List<string>> groups = new Dictionary<string, List<string>>();
+    List<Button> btGroups = new List<Button>();
+    EditMsgForm editMsgForm = new EditMsgForm();
     
     public MainForm()
     {
@@ -37,10 +39,52 @@ namespace Master
       {
         txLocalIp.Text += ip.ToString() + "\n";
       }
-      
+
+      addGroupButtons();
       timerUpdate.Enabled = true;
     }
-    
+
+    private void addGroupButtons()
+    {
+      string fn = Application.StartupPath + "\\groups.txt";
+      try
+      {
+        string[] grps = File.ReadAllLines(fn, Encoding.Default);
+        foreach (string line in grps)
+        {
+          if (!line.Contains("="))
+            continue;
+          string[] fields = line.Split('=');
+          string grpName = fields[0].Trim();
+          string[] pdas = fields[1].Split(',');
+          List<string> pdalist = new List<string>();
+          foreach (string pda in pdas)
+          {
+            int num = int.Parse(pda);
+            if (num != 0)
+              pdalist.Add(string.Format("PDA_{0:D2}", num));
+          }
+          groups.Add(grpName, pdalist);
+          int cnt = groups.Count;
+          Button bt = new Button();
+          bt.Location = new Point(12, btGrpAll.Location.Y+cnt*29);
+          bt.Name = string.Format("grp_{0:D2}", cnt);
+          bt.Size = new Size(btGrpAll.Size.Width, btGrpAll.Size.Height);
+          bt.Text = grpName;
+          toolTip1.SetToolTip(bt, string.Join(", ", pdalist.ToArray()));
+          bt.UseVisualStyleBackColor = true;
+          bt.Click+= new EventHandler(this.btGrp_Click);
+          
+          //btGroups.Add(bt);
+          Controls.Add(bt);
+        }
+      }catch(Exception e)
+      {
+        MessageBox.Show(string.Format("找不到 {0} 或文件格式有误！",fn), "出错",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
     private void MainForm_Load(object sender, EventArgs e)
     {
       //btStart_Click(sender, e);
@@ -87,7 +131,7 @@ namespace Master
     private void saveFile()
     {
       basefilename = string.Format(@"{0}.jpg", DateTime.Now.ToString("yyyyMMdd_HHmmss_ffffff"));
-      String filename = @"D:\figs\" + basefilename;
+      String filename = Application.StartupPath+"\\" + basefilename;
       int filesize = OkApi.SaveImageFile(hBoard, filename,
         80, OkApi.TARGET_SCREEN, 0, 1);
       if (filesize > 0)
@@ -120,6 +164,7 @@ namespace Master
       startCapture();
     }
 
+    /*
     private void sendtoPda(string ip)
     {
       if (isActive)
@@ -141,6 +186,7 @@ namespace Master
         udpClient_.Send(Encoding.Default.GetBytes(url), url.Length, ep);
       }
     }
+    */
     
     private void notifyPda(string pda)
     {
@@ -155,7 +201,7 @@ namespace Master
         udpClient_.Send(data, data.Length, ep);
       }
     }
-    
+    /*
     private void btPda1_Click(object sender, EventArgs e)
     {
       sendtoPda(txPda1Ip.Text);
@@ -165,7 +211,7 @@ namespace Master
     {
       sendtoPda(txPda2Ip.Text);
     }
-
+    */
     private void timerUpdate_Tick(object sender, EventArgs e)
     {
       Pda[] pdas = service.ListAllPdas();
@@ -199,16 +245,66 @@ namespace Master
       
     }
 
-    private void btGrp1_Click(object sender, EventArgs e)
+    private void btGrpAll_Click(object sender, EventArgs e)
+    {
+      Pda[] pdas = service.ListAllPdas();
+      string[] p = new string[pdas.Length];
+      for (int i = 0; i < p.Length; ++i)
+        p[i] = pdas[i].Name;
+
+      sendPda(p, btGrpAll.Text);
+    }
+
+    private void btGrp_Click(object sender, EventArgs e)
+    {
+      string grpName = ((Button)sender).Text;
+      sendPda(groups[grpName].ToArray(), grpName);
+    }
+
+    private void sendPda(string[] pdas, string groupName)
     {
       if (isActive)
       {
         stopCapture();
         saveFile();
-        startCapture();
       }
-      service.SendImage(currentImage, "Hello", new string[]{"PDA_01"});
-      notifyPda("PDA_01");
+
+      if (String.IsNullOrEmpty(basefilename))
+      {
+        MessageBox.Show("请先选择一幅图片");
+      }
+      else
+      {
+        editMsgForm.label1.Text = string.Format("图片及消息将发往 {0}", groupName);
+        DialogResult result = editMsgForm.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+          service.SendImage(currentImage, editMsgForm.textBox1.Text, pdas);
+          foreach (string pda in pdas)
+          {
+            notifyPda(pda);
+          }
+        }
+      }
+      
+      if (isActive)
+        startCapture();
     }
+
+    private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      if (e.KeyChar==32)
+      {
+        if (isActive)
+          btStop_Click(sender, null);
+        else 
+          btStart_Click(sender, null);
+        
+        e.Handled = true;
+      }
+      
+    }
+
+
   }
 }

@@ -106,9 +106,9 @@ namespace TestOkApi
       string[] pda = new string[] { "PDA_01", "PDA_02" }; // TODO: Initialize to an appropriate value
 
       int expected = 2;
-      int actual;
+      int actual=2;
 
-      actual = target.SendImage(imageId, text, pda);
+      //actual = target.SendImage(imageId, text, pda);
 
       Assert.AreEqual(expected, actual, "TestOkApi.localhost.Service.SendImage did not return the expected value.");
       //Assert.Inconclusive("Verify the correctness of this test method.");

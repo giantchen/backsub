@@ -38,6 +38,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EditMsgForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditMsgForm.Designer.cs">
+      <DependentUpon>EditMsgForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -47,6 +53,10 @@
     <Compile Include="OkApi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EditMsgForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EditMsgForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -107,7 +117,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="groups.txt" />
+    <Content Include="groups.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="messages.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
