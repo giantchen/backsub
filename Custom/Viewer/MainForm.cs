@@ -41,7 +41,7 @@ namespace Viewer
       }
 
       deviceId = Program.GetDeviceID();
-      textBox2.Text += deviceId;
+      // textBox2.Text += deviceId;
       service = new Service();
     }
 
@@ -85,8 +85,11 @@ namespace Viewer
         //wreq.
         */
         Show show = service.GetShow(pdaName);
+        tbMsg.Text = show.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss    ") + show.Text;
         picMain.Image = new Bitmap(new MemoryStream(show.Image));
         picMain.Invalidate();
+        Program.PlaySound(@"\Windows\notify.wav", IntPtr.Zero, 
+                          (int)(Program.Flags.SND_ASYNC | Program.Flags.SND_FILENAME));
       }
       catch (Exception ex)
       {
@@ -97,7 +100,7 @@ namespace Viewer
     private void MainForm_Load(object sender, EventArgs e)
     {
       pdaName = service.RegisterPda(deviceId);
-      textBox3.Text = pdaName;
+      tbMsg.Text = pdaName;
       timerUpdate_Tick(sender, e);
       timerUpdate.Enabled = true;
       listenerThread_.Start();
