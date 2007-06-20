@@ -4,7 +4,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <meta http-equiv="refresh" content="10">
+    <meta http-equiv="refresh" content="10" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>系统状态</title>
 </head>
 <body>
