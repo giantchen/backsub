@@ -24,11 +24,11 @@ namespace Service
   public class Service : System.Web.Services.WebService
   {
     static string connStr = ConfigurationManager.ConnectionStrings["Custom2"].ConnectionString;
-    
+
     [WebMethod]
     public Pda[] ListAllPdas()
     {
-      List<Pda> pdas= new List<Pda>();
+      List<Pda> pdas = new List<Pda>();
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         conn.Open();
@@ -64,7 +64,7 @@ namespace Service
     public Pda GetPda(string pdaName)
     {
       Pda pda = null;
-      
+
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         conn.Open();
@@ -79,7 +79,7 @@ namespace Service
 
       return pda;
     }
-    
+
     [WebMethod]
     public int UpdatePda(string deviceId, string ipAddr)
     {
@@ -112,7 +112,7 @@ namespace Service
           Debug.WriteLine(ex);
         }
         */
-      } 
+      }
       return count;
     }
 
@@ -129,7 +129,7 @@ namespace Service
 
         if (ret != null)
         {
-          pdaName = (string) ret;
+          pdaName = (string)ret;
         }
         else
         {
@@ -137,7 +137,7 @@ namespace Service
             "INSERT INTO PdaState (DeviceId) VALUES (@DeviceId); " +
             "UPDATE PdaState SET [Pda] = 'PDA_'+RIGHT('00'+LTRIM((SELECT COUNT(*) FROM [PdaState])), 2) WHERE Id = @@IDENTITY;" +
             "SELECT [Pda] FROM PdaState WHERE DeviceId = @DeviceId"
-            ,conn);
+            , conn);
           command.Parameters.AddWithValue("@DeviceId", deviceId);
           ret = command.ExecuteScalar();
 
@@ -149,12 +149,12 @@ namespace Service
       }
       return pdaName;
     }
-    
+
     [WebMethod]
     public long AddImage(byte[] data)
     {
       long imageId = 0;
-      
+
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         SqlCommand command = new SqlCommand("SET NOCOUNT ON; INSERT INTO Images ([Image], [TimeStamp]) VALUES (@Image, @TimeStamp); SELECT @@IDENTITY", conn);
@@ -164,10 +164,10 @@ namespace Service
         command.Connection.Open();
         imageId = (long)(decimal)command.ExecuteScalar();
       }
-      
+
       return imageId;
     }
-    
+
     [WebMethod]
     public byte[] GetImage(long imageId)
     {
@@ -186,12 +186,12 @@ namespace Service
 
       return data;
     }
-  
+
     //[WebMethod]
     private int SendImage(long imageId, string message, string[] pdas)
     {
       int count;
-      
+
       using (SqlConnection conn = new SqlConnection(connStr))
       {
         StringBuilder sb = new StringBuilder();
@@ -212,7 +212,7 @@ namespace Service
       }
       return count;
     }
-    
+
     [WebMethod]
     public void SendImage(byte[] image, string message, string[] pdas)
     {
@@ -221,18 +221,18 @@ namespace Service
 
       if (message == null)
         message = "";
-        
+
       long imageId = AddImage(image);
       SendImage(imageId, message, pdas);
     }
-    
+
     [WebMethod]
     public Show GetShow(string pda)
     {
       Show show = null;
       using (SqlConnection conn = new SqlConnection(connStr))
       {
-        SqlCommand command = new SqlCommand("SELECT TOP 1 [Images].[Image], [Shows].[TimeStamp], [Shows].[Message] FROM [Images], [Shows] " + 
+        SqlCommand command = new SqlCommand("SELECT TOP 1 [Images].[Image], [Shows].[TimeStamp], [Shows].[Message] FROM [Images], [Shows] " +
           "WHERE [Images].[Id] = [Shows].[ImageId] AND [Shows].[Pda] = @Pda ORDER BY [Shows].[Id] DESC", conn);
         command.Parameters.AddWithValue("@Pda", pda);
         command.Connection.Open();
@@ -244,9 +244,10 @@ namespace Service
           show.TimeStamp = (DateTime)reader["TimeStamp"];
           show.Message = (string)reader["Message"];
         }
-      }      
+      }
       return show;
     }
+
   }
 
   public class Show
