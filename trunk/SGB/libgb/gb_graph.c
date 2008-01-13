@@ -1,155 +1,108 @@
-/*3:*/
-//#line 42 "../gb_graph.w"
-
-#ifdef SYSV
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #define gb_typed_alloc(n,t,s) (t*) gb_alloc((long) ((n) *sizeof(t) ) ,s)  \
 
-#define n_1 uu.I \
+#define n_1 uu.I /* utility field |uu| may denote size of bipartite first part */
 
-#define arcs_per_block 102 \
+#define arcs_per_block 102
 
-#define gb_new_graph gb_nugraph
+#define gb_new_graph gb_nugraph /* abbreviations for external linkage */
 #define gb_new_arc gb_nuarc
-#define gb_new_edge gb_nuedge \
+#define gb_new_edge gb_nuedge
 
-#define string_block_size 1016 \
+#define string_block_size 1016  /* $1024-8$ is usually efficient */
 
 #define hash_link u.V
-#define hash_head v.V \
+#define hash_head v.V
 
-#define HASH_MULT 314159
-#define HASH_PRIME 516595003 \
+#define HASH_MULT 314159  /* random multiplier */
+#define HASH_PRIME 516595003  /* the 27182818th prime; it's less than $2^{29}$ */
 
-
-//#line 50 "../gb_graph.w"
-
-/*8:*/
-//#line 136 "../gb_graph.w"
+/*
+ * Type declarations
+ */
 
 typedef union {
-    struct vertex_struct *V;
-    struct arc_struct *A;
-    struct graph_struct *G;
-    char *S;
-    long I;
+    struct vertex_struct *V;  /* pointer to \&{Vertex} */
+    struct arc_struct *A;  /* pointer to \&{Arc} */
+    struct graph_struct *G; /* pointer to \&{Graph} */
+    char *S; /* pointer to string */
+    long I;  /* integer */
 } util;
 
-      /*:8*//*9: */
-//#line 162 "../gb_graph.w"
-
 typedef struct vertex_struct {
-    struct arc_struct *arcs;
-    char *name;
-    util u, v, w, x, y, z;
+    struct arc_struct *arcs;  /* linked list of arcs coming out of this vertex */
+    char *name; /* string identifying this vertex symbolically */
+    util u, v, w, x, y, z; /* multipurpose fields */
 } Vertex;
 
-      /*:9*//*10: */
-//#line 181 "../gb_graph.w"
-
 typedef struct arc_struct {
-    struct vertex_struct *tip;
-    struct arc_struct *next;
-    long len;
-    util a, b;
+    struct vertex_struct *tip;  /* the arc points to this vertex */
+    struct arc_struct *next;  /* another arc pointing from the same vertex */
+    long len;  /* length of this arc */
+    util a, b;  /* multipurpose fields */
 } Arc;
 
-       /*:10*//*12: */
-//#line 234 "../gb_graph.w"
-
 #define init_area(s)  *s= NULL
-struct area_pointers {
-    char *first;
-    struct area_pointers *next;
 
+struct area_pointers {
+    char *first; /* address of the beginning of this block */
+    struct area_pointers *next; /* address of area pointers in the previously allocated block */
 };
 
 typedef struct area_pointers *Area[1];
 
-       /*:12*//*20: */
-//#line 377 "../gb_graph.w"
-
 #define ID_FIELD_SIZE 161
 typedef struct graph_struct {
-    Vertex *vertices;
-    long n;
-    long m;
-    char id[ID_FIELD_SIZE];
-    char util_types[15];
-    Area data;
-    Area aux_data;
-    util uu, vv, ww, xx, yy, zz;
+    Vertex *vertices;  /* beginning of the vertex array */
+    long n;  /* total number of vertices */
+    long m;  /* total number of arcs */
+    char id[ID_FIELD_SIZE];  /* GraphBase identification */
+    char util_types[15];  /* usage of utility fields */
+    Area data;  /* the main data blocks */
+    Area aux_data;  /* subsidiary data blocks */
+    util uu, vv, ww, xx, yy, zz;  /* multipurpose fields */
 } Graph;
 
-       /*:20*//*34: */
-//#line 670 "../gb_graph.w"
+typedef unsigned long siz_t; /* basic machine address, as signless integer */
 
-typedef unsigned long siz_t;
+/* 
+ * Private declarations
+ */
+static Arc *next_arc; /* the next |Arc| available for allocation */
+static Arc *bad_arc; /* but if |next_arc=bad_arc|, that |Arc| isn't there */
+static char *next_string; /* the next byte available for storing a string */
+static char *bad_string; /* but if |next_string=bad_string|, don't byte */
+static Arc dummy_arc[2]; /* an |Arc| record to point to in an emergency */
+static Graph dummy_graph; /* a |Graph| record that's normally unused */
+static Graph *cur_graph=&dummy_graph; /* the |Graph| most recently created */
 
 
-/*:34*/
-//#line 51 "../gb_graph.w"
-
-/*28:*/
-//#line 521 "../gb_graph.w"
-
-static Arc *next_arc;
-static Arc *bad_arc;
-static char *next_string;
-static char *bad_string;
-static Arc dummy_arc[2];
-static Graph dummy_graph;
-static Graph *cur_graph = &dummy_graph;
-
-/*:28*/
-//#line 52 "../gb_graph.w"
-
-/*5:*/
-//#line 79 "../gb_graph.w"
-
-long verbose = 0;
-long panic_code = 0;
-
-      /*:5*//*14: */
-//#line 289 "../gb_graph.w"
-
-long gb_trouble_code = 0;
-
-       /*:14*//*24: */
-//#line 470 "../gb_graph.w"
-
-long extra_n = 4;
-char null_string[1];
-
-       /*:24*//*32: */
-//#line 654 "../gb_graph.w"
+/*
+ * External declarations
+ */
+long verbose=0; /* nonzero if ``verbose'' output is desired */
+long panic_code=0; /* set nonzero if graph generator returns null pointer */
+long gb_trouble_code=0; /* did |gb_alloc| return |NULL|? */
+long extra_n=4; /* the number of shadow vertices allocated by |gb_new_graph| */
+char null_string[1]; /* a null string constant */
 
 siz_t edge_trick = sizeof(Arc) - (sizeof(Arc) & (sizeof(Arc) - 1));
 
-/*:32*/
-//#line 53 "../gb_graph.w"
-
-/*13:*/
-//#line 267 "../gb_graph.w"
-
-//#line 12 "../PROTOTYPES/gb_graph.ch"
 char *gb_alloc(long n, Area s)
-//#line 271 "../gb_graph.w"
+//  long n; /* number of consecutive bytes desired */
+//  Area s; /* storage area that will contain the new block */
 {
-    long m = sizeof(char *);
-    Area t;
-    char *loc;
+    long m = sizeof(char *);  /* |m| is the size of a pointer variable */
+    Area t;  /* a temporary pointer */
+    char *loc; /* the block address */
 
     if (n <= 0 || n > 0xffff00 - 2 * m) {
-        gb_trouble_code |= 2;
+        gb_trouble_code |= 2; /* illegal request */
         return NULL;
     }
-    n = ((n + m - 1) / m) * m;
+    n = ((n + m - 1) / m) * m; /* round up to multiple of |m| */
     loc = (char *) calloc((unsigned) ((n + 2 * m + 255) / 256), 256);
     if (loc) {
         *t = (struct area_pointers *) (loc + n);
@@ -161,12 +114,7 @@ char *gb_alloc(long n, Area s)
     return loc;
 }
 
-       /*:13*//*16: */
-//#line 298 "../gb_graph.w"
-
-//#line 21 "../PROTOTYPES/gb_graph.ch"
 void gb_free(Area s)
-//#line 301 "../gb_graph.w"
 {
     Area t;
 
@@ -177,12 +125,8 @@ void gb_free(Area s)
     }
 }
 
-       /*:16*//*23: */
-//#line 443 "../gb_graph.w"
-
-//#line 40 "../PROTOTYPES/gb_graph.ch"
 Graph *gb_new_graph(long n)
-//#line 446 "../gb_graph.w"
+// long n;/* desired number of vertices */
 {
     cur_graph = (Graph *) calloc(1, sizeof(Graph));
     if (cur_graph) {
@@ -206,12 +150,12 @@ Graph *gb_new_graph(long n)
     return cur_graph;
 }
 
-       /*:23*//*26: */
-//#line 486 "../gb_graph.w"
-
-//#line 62 "../PROTOTYPES/gb_graph.ch"
+ /* |sprintf(g->id,"%s%s%s",s1,gg->id,s2)| */
 void make_compound_id(Graph * g, char *s1, Graph * gg, char *s2)
-//#line 492 "../gb_graph.w"
+//  Graph *g; /* graph whose |id| is to be set */
+//  char *s1; /* string for the beginning of the new |id| */
+//  Graph *gg; /* graph whose |id| is to be copied */
+//  char *s2; /* string for the end of the new |id| */
 {
     int avail = ID_FIELD_SIZE - strlen(s1) - strlen(s2);
     char tmp[ID_FIELD_SIZE];
@@ -223,12 +167,14 @@ void make_compound_id(Graph * g, char *s1, Graph * gg, char *s2)
         sprintf(g->id, "%s%.*s...)%s", s1, avail - 5, tmp, s2);
 }
 
-       /*:26*//*27: */
-//#line 499 "../gb_graph.w"
-
-//#line 79 "../PROTOTYPES/gb_graph.ch"
+/* |sprintf(g->id,"%s%s%s%s%s",s1,gg->id,s2,ggg->id,s3)| */
 void make_double_compound_id(Graph * g, char *s1, Graph * gg, char *s2, Graph * ggg, char *s3)
-//#line 508 "../gb_graph.w"
+//  Graph *g; /* graph whose |id| is to be set */
+//  char *s1; /* string for the beginning of the new |id| */
+//  Graph *gg; /* first graph whose |id| is to be copied */
+//  char *s2; /* string for the middle of the new |id| */
+//  Graph *ggg; /* second graph whose |id| is to be copied */
+//  char *s3; /* string for the end of the new |id| */
 {
     int avail = ID_FIELD_SIZE - strlen(s1) - strlen(s2) - strlen(s3);
 
@@ -239,12 +185,7 @@ void make_double_compound_id(Graph * g, char *s1, Graph * gg, char *s2, Graph * 
                 s2, (avail - 9) / 2, ggg->id, s3);
 }
 
-       /*:27*//*29: */
-//#line 550 "../gb_graph.w"
-
-//#line 92 "../PROTOTYPES/gb_graph.ch"
 Arc *gb_virgin_arc(void)
-//#line 552 "../gb_graph.w"
 {
     register Arc *cur_arc = next_arc;
 
@@ -261,12 +202,9 @@ Arc *gb_virgin_arc(void)
     return cur_arc;
 }
 
-       /*:29*//*30: */
-//#line 582 "../gb_graph.w"
-
-//#line 100 "../PROTOTYPES/gb_graph.ch"
 void gb_new_arc(Vertex * u, Vertex * v, long len)
-//#line 586 "../gb_graph.w"
+//   Vertex *u, *v; /* a newly created arc will go from |u| to |v| */
+//  long len; /* its length */
 {
     register Arc *cur_arc = gb_virgin_arc();
 
@@ -277,12 +215,9 @@ void gb_new_arc(Vertex * u, Vertex * v, long len)
     cur_graph->m++;
 }
 
-       /*:30*//*31: */
-//#line 627 "../gb_graph.w"
-
-//#line 110 "../PROTOTYPES/gb_graph.ch"
 void gb_new_edge(Vertex * u, Vertex * v, long len)
-//#line 631 "../gb_graph.w"
+//  Vertex *u, *v; /* new arcs will go from |u| to |v| and from |v| to |u| */
+//  long len; /* their length */
 {
     register Arc *cur_arc = gb_virgin_arc();
 
@@ -307,42 +242,32 @@ void gb_new_edge(Vertex * u, Vertex * v, long len)
     cur_graph->m += 2;
 }
 
-       /*:31*//*35: */
-//#line 690 "../gb_graph.w"
-
-//#line 119 "../PROTOTYPES/gb_graph.ch"
-char *gb_save_string(register char *s)
-//#line 693 "../gb_graph.w"
+char *gb_save_string(register char *s /* the string to be copied */)
 {
     register char *p = s;
-    register long len;
+    register long len; /* length of the string and the following null character */
 
-    while (*p++);
+    while (*p++);  /* advance to the end of the string */
     len = p - s;
     p = next_string;
-    if (p + len > bad_string) {
+    if (p + len > bad_string) { /* not enough room in the current block */
         long size = string_block_size;
 
         if (len > size)
             size = len;
         p = gb_alloc(size, cur_graph->data);
         if (p == NULL)
-            return null_string;
+            return null_string; /* return a pointer to |""| if memory ran out */
         bad_string = p + size;
     }
-    while (*s)
+    while (*s) /* copy the non-null bytes of the string */
         *p++ = *s++;
-    *p++ = '\0';
+    *p++ = '\0'; /* and append a null character */
     next_string = p;
     return p - len;
 }
 
-       /*:35*//*39: */
-//#line 773 "../gb_graph.w"
-
-//#line 127 "../PROTOTYPES/gb_graph.ch"
 void switch_to_graph(Graph * g)
-//#line 776 "../gb_graph.w"
 {
     cur_graph->ww.A = next_arc;
     cur_graph->xx.A = bad_arc;
@@ -359,33 +284,21 @@ void switch_to_graph(Graph * g)
     cur_graph->zz.S = NULL;
 }
 
-       /*:39*//*40: */
-//#line 791 "../gb_graph.w"
-
-//#line 134 "../PROTOTYPES/gb_graph.ch"
 void gb_recycle(Graph * g)
-//#line 794 "../gb_graph.w"
 {
     if (g) {
         gb_free(g->data);
         gb_free(g->aux_data);
-        free((char *) g);
+        free((char *) g); /* the user must not refer to |g| again */
     }
 }
 
-       /*:40*//*44: */
-//#line 856 "../gb_graph.w"
-
-//#line 178 "../PROTOTYPES/gb_graph.ch"
 void hash_in(Vertex * v)
-//#line 859 "../gb_graph.w"
 {
     register char *t = v->name;
     register Vertex *u;
 
-/*45:*/
-//#line 884 "../gb_graph.w"
-
+		// Find vertex |u|, whose location is the hash code for string |t|
     {
         register long h;
 
@@ -397,26 +310,16 @@ void hash_in(Vertex * v)
         u = cur_graph->vertices + (h % cur_graph->n);
     }
 
-/*:45*/
-//#line 861 "../gb_graph.w"
-    ;
     v->hash_link = u->hash_head;
     u->hash_head = v;
 }
 
-       /*:44*//*46: */
-//#line 899 "../gb_graph.w"
-
-//#line 185 "../PROTOTYPES/gb_graph.ch"
 Vertex *hash_out(char *s)
-//#line 902 "../gb_graph.w"
 {
     register char *t = s;
     register Vertex *u;
 
-/*45:*/
-//#line 884 "../gb_graph.w"
-
+		// Find vertex |u|, whose location is the hash code for string |t|
     {
         register long h;
 
@@ -428,21 +331,13 @@ Vertex *hash_out(char *s)
         u = cur_graph->vertices + (h % cur_graph->n);
     }
 
-/*:45*/
-//#line 904 "../gb_graph.w"
-    ;
     for (u = u->hash_head; u; u = u->hash_link)
         if (strcmp(s, u->name) == 0)
             return u;
     return NULL;
 }
 
-       /*:46*//*47: */
-//#line 910 "../gb_graph.w"
-
-//#line 192 "../PROTOTYPES/gb_graph.ch"
 void hash_setup(Graph * g)
-//#line 913 "../gb_graph.w"
 {
     Graph *save_cur_graph;
 
@@ -455,18 +350,12 @@ void hash_setup(Graph * g)
             v->hash_head = NULL;
         for (v = g->vertices; v < g->vertices + g->n; v++)
             hash_in(v);
-        g->util_types[0] = g->util_types[1] = 'V';
-
+        g->util_types[0] = g->util_types[1] = 'V'; /* indicate usage of |hash_head| and |hash_link| */
         cur_graph = save_cur_graph;
     }
 }
 
-       /*:47*//*48: */
-//#line 925 "../gb_graph.w"
-
-//#line 200 "../PROTOTYPES/gb_graph.ch"
 Vertex *hash_lookup(char *s, Graph * g)
-//#line 929 "../gb_graph.w"
 {
     Graph *save_cur_graph;
 

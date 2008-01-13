@@ -1,97 +1,37 @@
-/*6:*/
-//#line 85 "../gb_io.w"
-
-/*7:*/
-//#line 93 "../gb_io.w"
-
 #include <stdio.h>
-#ifdef SYSV
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 
-/*:7*/
-//#line 86 "../gb_io.w"
-
+/* record of anomalies noted by {\sc GB\_\,IO} routines */
 extern long io_errors;
 
-
-      /*:6*//*13: */
-//#line 204 "../gb_io.w"
-
 #define unexpected_char  127
-//#line 48 "../PROTOTYPES/gb_io.ch"
-extern char imap_chr(long);
-extern long imap_ord(char);
 
-//#line 208 "../gb_io.w"
+extern char imap_chr(long); /* the character that maps to a given character */
+extern long imap_ord(char); /* the ordinal number of a given character */
 
-       /*:13*//*16: */
-//#line 224 "../gb_io.w"
+extern void gb_newline(void); /* advance to next line of the data file */
+extern long new_checksum(char *, long); /* compute change in magic number */
 
-//#line 62 "../PROTOTYPES/gb_io.ch"
-extern void gb_newline(void);
-extern long new_checksum(char *, long);
+extern long gb_eof(void); /* has the data all been read? */
 
-//#line 227 "../gb_io.w"
+extern char gb_char(void); /* get next character of current line, or |'\n'| */
+extern void gb_backup(void); /* move back ready to scan a character again */
 
-       /*:16*//*19: */
-//#line 258 "../gb_io.w"
-
-//#line 85 "../PROTOTYPES/gb_io.ch"
-extern long gb_eof(void);
-
-//#line 260 "../gb_io.w"
-
-       /*:19*//*21: */
-//#line 275 "../gb_io.w"
-
-//#line 98 "../PROTOTYPES/gb_io.ch"
-extern char gb_char(void);
-extern void gb_backup(void);
-
-//#line 278 "../gb_io.w"
-
-       /*:21*//*23: */
-//#line 306 "../gb_io.w"
-
-//#line 118 "../PROTOTYPES/gb_io.ch"
-extern long gb_digit(char);
-extern unsigned long gb_number(char);
-
-//#line 309 "../gb_io.w"
-
-       /*:23*//*25: */
-//#line 351 "../gb_io.w"
+extern long gb_digit(char); /* |gb_digit(d)| reads a digit between 0 and |d-1| */
+extern unsigned long gb_number(char); /* |gb_number(d)| reads a radix-|d| number */
 
 #define STR_BUF_LENGTH 160
-extern char str_buf[];
+extern char str_buf[]; /* safe place to receive output of |gb_string| */
 
-//#line 139 "../PROTOTYPES/gb_io.ch"
-extern char *gb_string(char *, char);
+extern char *gb_string(char *, char); /* |gb_string(p,c)| reads a string delimited by |c|
+  into bytes starting at |p| */
 
-
-//#line 356 "../gb_io.w"
-
-       /*:25*//*29: */
-//#line 426 "../gb_io.w"
 
 #define gb_raw_open gb_r_open
-//#line 157 "../PROTOTYPES/gb_io.ch"
-extern void gb_raw_open(char *);
-extern long gb_open(char *);
 
-//#line 430 "../gb_io.w"
-
-       /*:29*//*41: */
-//#line 567 "../gb_io.w"
+extern void gb_raw_open(char *); /* open a file for GraphBase input */
+extern long gb_open(char *); /* open a GraphBase data file; return 0 if OK */
 
 #define gb_raw_close gb_r_close
-//#line 185 "../PROTOTYPES/gb_io.ch"
-extern long gb_close(void);
-extern long gb_raw_close(void);
-
-//#line 571 "../gb_io.w"
-
-/*:41*/
+extern long gb_close(void); /* close a GraphBase data file; return 0 if OK */
+extern long gb_raw_close(void); /* close file and return the checksum */

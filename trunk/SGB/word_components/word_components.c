@@ -1,60 +1,55 @@
-/*1:*/
-//#line 15 "../word_components.w"
+#include "gb_graph.h" /* the GraphBase data structures */
+#include "gb_words.h" /* the |words| routine */
 
-#include "gb_graph.h"
-#include "gb_words.h"
-#define link z.V
-#define master y.V
-#define size x.I \
+/*
+This simple demonstration program computes the connected
+components of the GraphBase graph of five-letter words. It prints the
+words in order of decreasing weight, showing the number of edges,
+components, and isolated vertices present in the graph defined by the
+first $n$ words for all~$n$.
+*/
 
+#define link z.V  /* link to next vertex in component (occupies utility field |z|) */
+#define master y.V /* pointer to master vertex in component */
+#define size x.I  /* size of component, kept up to date for master vertices only */
 
-//#line 18 "../word_components.w"
-
-//#line 4 "../PROTOTYPES/word_components.ch"
 int main(void)
-//#line 20 "../word_components.w"
 {
-    Graph *g = words(0L, 0L, 0L, 0L);
-    Vertex *v;
-    Arc *a;
-    long n = 0;
-    long isol = 0;
-    long comp = 0;
-    long m = 0;
+    Graph *g = words(0L, 0L, 0L, 0L); /* the graph we love */
+    Vertex *v; /* the current vertex being added to the component structure */
+    Arc *a;  /* the current arc of interest */
+    long n = 0; /* the number of vertices in the component structure */
+    long isol = 0; /* the number of isolated vertices in the component structure */
+    long comp = 0;  /* the current number of components */
+    long m = 0; /* the current number of edges */
 
     printf("Component analysis of %s\n", g->id);
     for (v = g->vertices; v < g->vertices + g->n; v++) {
         n++, printf("%4ld: %5ld %s", n, v->weight, v->name);
-/*2:*/
-//#line 42 "../word_components.w"
 
-/*3:*/
-//#line 74 "../word_components.w"
+        /* Add vertex |v| to the component structure, printing out any components it joins */
 
-        v->link = v;
-        v->master = v;
-        v->size = 1;
-        isol++;
-        comp++;
-
-/*:3*/
-//#line 43 "../word_components.w"
-        ;
+        /* Make |v| a component all by itself */
+        {
+          v->link = v;
+          v->master = v;
+          v->size = 1;
+          isol++;
+          comp++;
+        }
+        
         a = v->arcs;
         while (a && a->tip > v)
             a = a->next;
-        if (!a)
-            printf("[1]");
+        if (!a) printf("[1]"); /* indicate that this word is isolated */
         else {
-            long c = 0;
+            long c = 0;/* the number of merge steps performed because of |v| */
 
             for (; a; a = a->next) {
                 register Vertex *u = a->tip;
-
                 m++;
-/*4:*/
-//#line 85 "../word_components.w"
-
+                
+                /* Merge the components of |u| and |v|, if they differ */
                 u = u->master;
                 if (u != v->master) {
                     register Vertex *w = v->master, *t;
@@ -85,28 +80,20 @@ int main(void)
                     w->link = t;
                     comp--;
                 }
-
-/*:4*/
-//#line 50 "../word_components.w"
-                ;
             }
             printf(" in %s[%ld]", v->master->name, v->master->size);
-
+            /* show final component */
         }
-
-/*:2*/
-//#line 31 "../word_components.w"
-        ;
         printf("; c=%ld,i=%ld,m=%ld\n", comp, isol, m);
     }
-/*5:*/
-//#line 112 "../word_components.w"
+
+    /*Display all unusual components*/
 
     printf("\nThe following non-isolated words didn't join the giant component:\n");
     for (v = g->vertices; v < g->vertices + g->n; v++)
         if (v->master == v && v->size > 1 && v->size + v->size < g->n) {
             register Vertex *u;
-            long c = 1;
+            long c = 1; /* count of number printed on current line */
 
             printf("%s", v->name);
             for (u = v->link; u != v; u = u->link) {
@@ -117,10 +104,5 @@ int main(void)
             putchar('\n');
         }
 
-/*:5*/
-//#line 34 "../word_components.w"
-    ;
     return 0;
 }
-
-/*:1*/
