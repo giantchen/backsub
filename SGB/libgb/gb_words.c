@@ -1,11 +1,8 @@
-/*7:*/
-//#line 151 "../gb_words.w"
+#include "gb_io.h"  /* we will use the {\sc GB\_\,IO} routines for input */
+#include "gb_flip.h" /* we will use the {\sc GB\_\,FLIP} routines for random numbers */
 
-#include "gb_io.h"
-#include "gb_flip.h"
-
-#include "gb_graph.h"
-#include "gb_sort.h"
+#include "gb_graph.h" /* we will use the {\sc GB\_\,GRAPH} data structures */
+#include "gb_sort.h" /* and |gb_linksort| for sorting */
 #define panic(c) {gb_free(node_blocks) ; \
 panic_code= c;gb_trouble_code= 0;return NULL;} \
 
@@ -19,7 +16,7 @@ panic_code= c;gb_trouble_code= 0;return NULL;} \
 *((y) +4) = *((x) +4) ; \
 } \
 
-#define hash_prime 6997 \
+#define hash_prime 6997  /* a prime number larger than the total number of words */
 
 #define weight u.I
 #define loc a.I \
@@ -31,111 +28,64 @@ panic_code= c;gb_trouble_code= 0;return NULL;} \
 #define hdown(k) h==htab[k]?h= htab[k+1]-1:h-- \
 
 
-//#line 157 "../gb_words.w"
-
-/*15:*/
-//#line 281 "../gb_words.w"
-
 typedef struct node_struct {
-    long key;
-    struct node_struct *link;
-    char wd[5];
-
+    long key; /* the sort key (weight plus $2^{30}$) */
+    struct node_struct *link; /* links the nodes together */
+    char wd[5]; /* five-letter word
+                   (which typically consumes eight bytes, too bad) */
 } node;
-
-       /*:15*//*23: */
-//#line 404 "../gb_words.w"
 
 typedef Vertex *hash_table[hash_prime];
 
-/*:23*/
-//#line 158 "../gb_words.w"
+static long max_c[] = { 15194, 3560, 4467, 460, 6976, 756, 362 }; /* maximum counts $C_j$ */
 
-/*4:*/
-//#line 97 "../gb_words.w"
+static long default_wt_vector[] = { 100, 10, 4, 2, 2, 1, 1, 1, 1 }; /* use this if |wt_vector=NULL| */
 
-static long max_c[] = { 15194, 3560, 4467, 460, 6976, 756, 362 };
+static Area node_blocks; /* the memory area for blocks of nodes */
 
-static long default_wt_vector[] = { 100, 10, 4, 2, 2, 1, 1, 1, 1 };
+static hash_table *htab; /* five dynamically allocated hash tables */
 
-
-      /*:4*//*17: */
-//#line 295 "../gb_words.w"
-
-static Area node_blocks;
-
-       /*:17*//*25: */
-//#line 411 "../gb_words.w"
-
-static hash_table *htab;
-
-/*:25*/
-//#line 159 "../gb_words.w"
-
-/*10:*/
-//#line 209 "../gb_words.w"
-
-//#line 27 "../PROTOTYPES/gb_words.ch"
 static double flabs(long x)
-//#line 212 "../gb_words.w"
 {
     if (x >= 0)
         return (double) x;
     return -((double) x);
 }
 
-       /*:10*//*13: */
-//#line 255 "../gb_words.w"
-
-//#line 34 "../PROTOTYPES/gb_words.ch"
 static long iabs(long x)
-//#line 258 "../gb_words.w"
 {
     if (x >= 0)
         return (long) x;
     return -((long) x);
 }
 
-/*:13*/
-//#line 160 "../gb_words.w"
-
-
-//#line 16 "../PROTOTYPES/gb_words.ch"
 Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
-//#line 167 "../gb_words.w"
+//  unsigned long n; /* maximum number of vertices desired */
+//  long wt_vector[]; /* pointer to array of weights */
+//  long wt_threshold; /* minimum qualifying weight */
+//  long seed; /* random number seed */
 {                               /*8: */
-//#line 179 "../gb_words.w"
+        
+    Graph *new_graph; /* the graph constructed by |words| */
 
-    Graph *new_graph;
+register long wt; /* the weight of the current word */
+char word[5]; /* the current five-letter word */
+long nn=0; /* the number of qualifying words found so far */
 
-    /*:8*//*14: */
-//#line 264 "../gb_words.w"
+node *next_node; /* the next node available for allocation */
+node *bad_node; /* if |next_node=bad_node|, the node isn't really there */
+node *stack_ptr; /* the most recently created node */
+node *cur_node; /* current node being created or examined */
 
-    register long wt;
-    char word[5];
-    long nn = 0;
-
-    /*:14*//*16: */
-//#line 289 "../gb_words.w"
-
-    node *next_node;
-    node *bad_node;
-    node *stack_ptr;
-    node *cur_node;
-
-    /*:16*//*24: */
-//#line 407 "../gb_words.w"
-
-    Vertex *cur_vertex;
-    char *next_string;
+Vertex *cur_vertex; /* the current vertex being created or examined */
+char *next_string; /* where we'll store the next five-letter word */
 
 /*:24*/
 //#line 167 "../gb_words.w"
 
     gb_init_rand(seed);
-/*9:*/
-//#line 196 "../gb_words.w"
 
+/* Check that |wt_vector| is valid */
     if (!wt_vector)
         wt_vector = default_wt_vector;
     else {
@@ -143,8 +93,7 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
         register long *p, *q;
         register long acc;
 
-/*11:*/
-//#line 229 "../gb_words.w"
+/* Use floating point arithmetic to check that |wt_vector| isn't totally off base */
 
         p = wt_vector;
         flacc = flabs(*p++);
@@ -157,11 +106,7 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
 
             panic(very_bad_specs);
 
-/*:11*/
-//#line 202 "../gb_words.w"
-        ;
-/*12:*/
-//#line 245 "../gb_words.w"
+/* Use integer arithmetic to check that |wt_vector| is truly OK */
 
         p = wt_vector;
         acc = iabs(*p++);
@@ -172,74 +117,60 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
             acc += *q * iabs(*++p);
         if (acc >= 0x40000000)
             panic(bad_specs);
-
-/*:12*/
-//#line 203 "../gb_words.w"
-        ;
     }
 
-/*:9*/
-//#line 169 "../gb_words.w"
-    ;
-/*18:*/
-//#line 298 "../gb_words.w"
-
+    /* Input the qualifying words to a linked list, computing their weights */
     next_node = bad_node = stack_ptr = NULL;
     if (gb_open("words.dat") != 0)
         panic(early_data_fault);
+        /* couldn't open |"words.dat"| using GraphBase conventions;
+                |io_errors| tells why */
 
-
-    do                          /*19: */
-        //#line 310 "../gb_words.w"
-
+    do /* Read one word, and put it on the stack if it qualifies */
     {
         register long j;
 
         for (j = 0; j < 5; j++)
             word[j] = gb_char();
-/*21:*/
-//#line 349 "../gb_words.w"
 
+        /* Compute the weight |wt| */
         {
-            register long *p, *q;
-            register long c;
+            register long *p, *q; /* pointers to $C_j$ and $w_j$ */
+            register long c; /* current count */
 
             switch (gb_char()) {
-            case '*':
+            case '*': /* `common' word */
                 wt = wt_vector[0];
                 break;
-            case '+':
+            case '+': /* `advanced' word */
                 wt = wt_vector[1];
                 break;
-            case ' ':
+            case ' ':  /* `unusual' word */
             case '\n':
                 wt = 0;
                 break;
-            default:
+            default: /* unknown type of word */
                 panic(syntax_error);
             }
             p = &max_c[0];
             q = &wt_vector[2];
             do {
-                if (p == &max_c[7])
+                if (p == &max_c[7])  /* too many counts */
                     panic(syntax_error + 1);
                 c = gb_number(10);
-                if (c > *p++)
+                if (c > *p++) /* count too large */
                     panic(syntax_error + 2);
                 wt += c ** q++;
             } while (gb_char() == ',');
         }
 
-/*:21*/
-//#line 313 "../gb_words.w"
-        ;
-        if (wt >= wt_threshold) {
-/*20:*/
-//#line 329 "../gb_words.w"
+        if (wt >= wt_threshold) {/* it qualifies */
+
+            /* Install |word| and |wt| in a new node */
 
             if (next_node == bad_node) {
                 cur_node = gb_typed_alloc(nodes_per_block, node, node_blocks);
-                if (cur_node == NULL)
+                if (cur_node == NULL) /* out of memory already */
                     panic(no_room + 1);
                 next_node = cur_node + 1;
                 bad_node = cur_node + nodes_per_block;
@@ -250,37 +181,26 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
             copy5(cur_node->wd, word);
             stack_ptr = cur_node;
 
-/*:20*/
-//#line 315 "../gb_words.w"
-            ;
             nn++;
         }
         gb_newline();
     }
-
-/*:19*/
-//#line 304 "../gb_words.w"
-
     while (!gb_eof());
     if (gb_close() != 0)
         panic(late_data_fault);
+    /* something's wrong with |"words.dat"|; see |io_errors| */
 
+    // Input the qualifying words to a linked list, computing their weights
 
-/*:18*/
-//#line 170 "../gb_words.w"
-    ;
-/*22:*/
-//#line 381 "../gb_words.w"
-
+    /* Sort and output the words, determining adjacencies */
     gb_linksort(stack_ptr);
-/*27:*/
-//#line 425 "../gb_words.w"
-
+    
+    /* Allocate storage for the new graph; adjust |n| if it is zero or too large */
     if (n == 0 || nn < n)
         n = nn;
     new_graph = gb_new_graph(n);
     if (new_graph == NULL)
-        panic(no_room);
+        panic(no_room); /* out of memory before we're even started */
     if (wt_vector == default_wt_vector)
         sprintf(new_graph->id, "words(%lu,0,%ld,%ld)", n, wt_threshold, seed);
     else
@@ -294,33 +214,28 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
 
     htab = gb_typed_alloc(5, hash_table, new_graph->aux_data);
 
-/*:27*/
-//#line 383 "../gb_words.w"
-    ;
+    // Allocate storage for the new graph; adjust |n| if it is zero or too large
     if (gb_trouble_code == 0 && n) {
-        register long j;
-        register node *p;
+  register long j; /* runs through sorted lists */
+  register node *p; /* the current node being output */
 
         nn = n;
         for (j = 127; j >= 0; j--)
             for (p = (node *) gb_sorted[j]; p; p = p->link) {
-/*28:*/
-//#line 442 "../gb_words.w"
-
+            /* Add the word |p->wd| to the graph */
                 {
-                    register char *q;
+                    register char *q; /* the new word */
 
                     q = cur_vertex->name = next_string;
                     next_string += 6;
                     copy5(q, p->wd);
                     cur_vertex->weight = p->key - 0x40000000;
-/*29:*/
-//#line 461 "../gb_words.w"
-
+                    
+                    /* Add edges for all previous words |r| that nearly match |q| */
                     {
-                        register char *r;
-                        register Vertex **h;
-                        register long raw_hash;
+register char *r; /* previous word possibly adjacent to |q| */
+  register Vertex **h; /* hash address for linear probing */
+  register long raw_hash; /* five-letter hash code before remaindering */
 
                         raw_hash =
                             (((((((ch(q) << 5) + ch(q + 1)) << 5) + ch(q + 2)) << 5) +
@@ -358,41 +273,32 @@ Graph *words(unsigned long n, long wt_vector[], long wt_threshold, long seed)
                         }
                         *h = cur_vertex;
                     }
-
-/*:29*/
-//#line 448 "../gb_words.w"
-                    ;
+                    // Add edges for all previous words |r| that nearly match |q|
                     cur_vertex++;
                 }
-
-/*:28*/
-//#line 390 "../gb_words.w"
-                ;
+                // Add the word |p->wd| to the graph
+                
                 if (--nn == 0)
                     goto done;
             }
     }
   done:gb_free(node_blocks);
+// Sort and output the words, determining adjacencies
 
-/*:22*/
-//#line 171 "../gb_words.w"
-    ;
     if (gb_trouble_code) {
         gb_recycle(new_graph);
-        panic(alloc_fault);
+        panic(alloc_fault); /* oops, we ran out of memory somewhere back there */
     }
     return new_graph;
 }
 
-      /*:7*//*30: */
-//#line 43 "../PROTOTYPES/gb_words.ch"
 Vertex *find_word(char *q, void (*f) (Vertex *))
-
-//#line 512 "../gb_words.w"
+/* |*f| should take one argument, of type |Vertex *|, or |f| should be |NULL| */
 {
-    register char *r;
-    register Vertex **h;
-    register long raw_hash;
+    register char *r; /* previous word possibly adjacent to |q| */
+  register Vertex **h; /* hash address for linear probing */
+  register long raw_hash; /* five-letter hash code before remaindering */
+
 
     raw_hash =
         (((((((ch(q) << 5) + ch(q + 1)) << 5) + ch(q + 2)) << 5) + ch(q + 3)) << 5) + ch(q + 4);
@@ -401,9 +307,8 @@ Vertex *find_word(char *q, void (*f) (Vertex *))
         if (mtch(0) && match(1, 2, 3, 4))
             return *h;
     }
-/*31:*/
-//#line 525 "../gb_words.w"
 
+    /* Invoke |f| on every vertex that is adjacent to word~|q| */
     if (f) {
         for (h = htab[0] + (raw_hash - (ch(q) << 20)) % hash_prime; *h; hdown(0)) {
             r = (*h)->name;
@@ -431,11 +336,6 @@ Vertex *find_word(char *q, void (*f) (Vertex *))
                 (*f) (*h);
         }
     }
-
-/*:31*/
-//#line 521 "../gb_words.w"
-    ;
     return NULL;
 }
 
-/*:30*/
